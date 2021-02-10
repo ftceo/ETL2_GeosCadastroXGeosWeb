@@ -47,14 +47,21 @@
             this.label2 = new System.Windows.Forms.Label();
             this.lblProgresso = new System.Windows.Forms.Label();
             this.lblPorcento = new System.Windows.Forms.Label();
-            this.btnETL3 = new System.Windows.Forms.Button();
+            this.btnEntraFotos = new System.Windows.Forms.Button();
+            this.lblAcompanhamentoDownload = new System.Windows.Forms.Label();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.btnEntregaFotosCoelba = new System.Windows.Forms.Button();
+            this.txtDiretorioProjeto = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.progressBar2 = new System.Windows.Forms.ProgressBar();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            this.groupBox3.SuspendLayout();
             this.SuspendLayout();
             // 
             // progressBar1
             // 
-            this.progressBar1.Location = new System.Drawing.Point(12, 320);
+            this.progressBar1.Location = new System.Drawing.Point(12, 363);
             this.progressBar1.Name = "progressBar1";
             this.progressBar1.Size = new System.Drawing.Size(991, 45);
             this.progressBar1.TabIndex = 1;
@@ -76,7 +83,7 @@
             // 
             this.btnDadosPrimarios.Location = new System.Drawing.Point(718, 26);
             this.btnDadosPrimarios.Name = "btnDadosPrimarios";
-            this.btnDadosPrimarios.Size = new System.Drawing.Size(232, 52);
+            this.btnDadosPrimarios.Size = new System.Drawing.Size(253, 52);
             this.btnDadosPrimarios.TabIndex = 29;
             this.btnDadosPrimarios.Text = "Importar Dados Primários";
             this.btnDadosPrimarios.UseVisualStyleBackColor = true;
@@ -227,7 +234,7 @@
             // lblProgresso
             // 
             this.lblProgresso.AutoSize = true;
-            this.lblProgresso.Location = new System.Drawing.Point(449, 380);
+            this.lblProgresso.Location = new System.Drawing.Point(449, 423);
             this.lblProgresso.Name = "lblProgresso";
             this.lblProgresso.Size = new System.Drawing.Size(0, 17);
             this.lblProgresso.TabIndex = 4;
@@ -237,27 +244,84 @@
             this.lblPorcento.AutoSize = true;
             this.lblPorcento.BackColor = System.Drawing.Color.Transparent;
             this.lblPorcento.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblPorcento.Location = new System.Drawing.Point(483, 331);
+            this.lblPorcento.Location = new System.Drawing.Point(483, 374);
             this.lblPorcento.Name = "lblPorcento";
             this.lblPorcento.Size = new System.Drawing.Size(0, 25);
             this.lblPorcento.TabIndex = 5;
             // 
-            // btnETL3
+            // btnEntraFotos
             // 
-            this.btnETL3.Location = new System.Drawing.Point(87, 265);
-            this.btnETL3.Name = "btnETL3";
-            this.btnETL3.Size = new System.Drawing.Size(147, 37);
-            this.btnETL3.TabIndex = 6;
-            this.btnETL3.Text = "ETL3";
-            this.btnETL3.UseVisualStyleBackColor = true;
-            this.btnETL3.Click += new System.EventHandler(this.btnETL3_Click);
+            this.btnEntraFotos.Location = new System.Drawing.Point(87, 265);
+            this.btnEntraFotos.Name = "btnEntraFotos";
+            this.btnEntraFotos.Size = new System.Drawing.Size(147, 37);
+            this.btnEntraFotos.TabIndex = 6;
+            this.btnEntraFotos.Text = "Entrega Fotos";
+            this.btnEntraFotos.UseVisualStyleBackColor = true;
+            this.btnEntraFotos.Click += new System.EventHandler(this.btnETL3_Click);
+            // 
+            // lblAcompanhamentoDownload
+            // 
+            this.lblAcompanhamentoDownload.AutoSize = true;
+            this.lblAcompanhamentoDownload.Location = new System.Drawing.Point(453, 276);
+            this.lblAcompanhamentoDownload.Name = "lblAcompanhamentoDownload";
+            this.lblAcompanhamentoDownload.Size = new System.Drawing.Size(0, 17);
+            this.lblAcompanhamentoDownload.TabIndex = 8;
+            // 
+            // groupBox3
+            // 
+            this.groupBox3.Controls.Add(this.btnEntregaFotosCoelba);
+            this.groupBox3.Controls.Add(this.txtDiretorioProjeto);
+            this.groupBox3.Controls.Add(this.label4);
+            this.groupBox3.Controls.Add(this.progressBar2);
+            this.groupBox3.Location = new System.Drawing.Point(15, 265);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(989, 66);
+            this.groupBox3.TabIndex = 9;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "Entrega Fotos";
+            // 
+            // btnEntregaFotosCoelba
+            // 
+            this.btnEntregaFotosCoelba.Location = new System.Drawing.Point(794, 25);
+            this.btnEntregaFotosCoelba.Name = "btnEntregaFotosCoelba";
+            this.btnEntregaFotosCoelba.Size = new System.Drawing.Size(175, 29);
+            this.btnEntregaFotosCoelba.TabIndex = 8;
+            this.btnEntregaFotosCoelba.Text = "Entrega Fotos";
+            this.btnEntregaFotosCoelba.UseVisualStyleBackColor = true;
+            this.btnEntregaFotosCoelba.Click += new System.EventHandler(this.btnEntregaFotosCoelba_Click_1);
+            // 
+            // txtDiretorioProjeto
+            // 
+            this.txtDiretorioProjeto.Location = new System.Drawing.Point(118, 25);
+            this.txtDiretorioProjeto.Name = "txtDiretorioProjeto";
+            this.txtDiretorioProjeto.Size = new System.Drawing.Size(657, 22);
+            this.txtDiretorioProjeto.TabIndex = 1;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(14, 28);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(98, 17);
+            this.label4.TabIndex = 0;
+            this.label4.Text = "Pasta destino:";
+            // 
+            // progressBar2
+            // 
+            this.progressBar2.Location = new System.Drawing.Point(118, 22);
+            this.progressBar2.Name = "progressBar2";
+            this.progressBar2.Size = new System.Drawing.Size(679, 25);
+            this.progressBar2.TabIndex = 9;
+            this.progressBar2.Visible = false;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1015, 414);
-            this.Controls.Add(this.btnETL3);
+            this.ClientSize = new System.Drawing.Size(1015, 537);
+            this.Controls.Add(this.groupBox3);
+            this.Controls.Add(this.lblAcompanhamentoDownload);
+            this.Controls.Add(this.btnEntraFotos);
             this.Controls.Add(this.lblPorcento);
             this.Controls.Add(this.lblProgresso);
             this.Controls.Add(this.groupBox2);
@@ -272,6 +336,8 @@
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            this.groupBox3.ResumeLayout(false);
+            this.groupBox3.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -297,7 +363,13 @@
         private System.Windows.Forms.Button btnInstacaoa;
         private System.Windows.Forms.Label lblProgresso;
         private System.Windows.Forms.Label lblPorcento;
-        private System.Windows.Forms.Button btnETL3;
+        private System.Windows.Forms.Button btnEntraFotos;
+        private System.Windows.Forms.Label lblAcompanhamentoDownload;
+        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.TextBox txtDiretorioProjeto;
+        private System.Windows.Forms.Button btnEntregaFotosCoelba;
+        private System.Windows.Forms.ProgressBar progressBar2;
     }
 }
 

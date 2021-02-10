@@ -1,10 +1,14 @@
 ﻿using DAO;
 using Microsoft.SqlServer.Types;
 using System;
+using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
+using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -149,7 +153,185 @@ namespace ETL2_GeosCadastroXGeosWeb
         #endregion
 
         #region " Postes "
-        private async Task ExportarDados_SQLCadastro_SQLGeos_LOCAL_Async(DataTable dados)
+        private void btnSincronizar_Click_1(object sender, EventArgs e)
+        {
+
+            string query = "";
+            #region " Organização "
+
+            DataTable dtDadosMunicipio = (DataTable)DBAccessGeos.ExecutarComando("select name from Municipalities where id =" + cmbIdMunicipioGeosWeb.SelectedItem.ToString().Split('-')[0], CommandType.Text, null, DBAccessGeos.TypeCommand.ExecuteDataTable);
+            query = "Insert Into Organizations ([Name],[OrganizationTypeId],[ExtId],[LongName],[CNPJ],[Rua],[No],[Complementary],[City],[State],[CEP],[Telephone1],[DDD1],[Telephone2],[DDD2],[Email1],[Email2],[Barrio],[Active],[ExpirationDate],[AccountContract],[CreationDate],[MunicipalityId]) ";
+            query += "output inserted.OrganizationId values (";
+            query += "'Pref." + dtDadosMunicipio.Rows[0][0].ToString() + "',5,0,";
+            query += "'Pref." + dtDadosMunicipio.Rows[0][0].ToString() + "',";
+            query += "null, NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,1,NULL,NULL,NULL,NULL,";
+            query += cmbIdMunicipioGeosWeb.SelectedItem.ToString().Split('-')[0] + ")";
+            var newIdOrganization = DBAccessGeos.ExecutarComando(query, CommandType.Text, null, DBAccessGeos.TypeCommand.ExecuteScalar);
+
+            progressBar1.Value = progressBar1.Value + 10;
+
+            query = "INSERT INTO OrganizationMunicipalities(OrganizationId, MunicipalityId, Active) ";
+            query += "VALUES(" + newIdOrganization.ToString() + "," + cmbIdMunicipioGeosWeb.SelectedItem.ToString().Split('-')[0] + ", 1)";
+            DBAccessGeos.ExecutarComando(query, CommandType.Text, null, DBAccessGeos.TypeCommand.ExecuteNonQuery);
+
+            progressBar1.Value = progressBar1.Value + 20;
+
+            #endregion
+
+            #region " Centro de Despacho "
+
+            progressBar1.Value = progressBar1.Value + 20;
+
+            SqlConnection connection = new SqlConnection(DBSettingGeos.ConnectionString);
+            connection.Open();
+
+            query = "insert into DispatchCenters (OrganizationId,Name,Status,Special,NumberHighAvailability,NumberLowAvailability,NumberMediumAvailability) ";
+            query += "output inserted.id values (@OrganizationId,@Name,@Status,@Special,@NumberHighAvailability,@NumberLowAvailability,@NumberMediumAvailability)";
+
+            SqlCommand comandoGeos = new SqlCommand(query, connection);
+            comandoGeos.Parameters.AddWithValue("@OrganizationId", 1);
+            comandoGeos.Parameters.AddWithValue("@Name", "Cadastro da Rede Elétrica de " + dtDadosMunicipio.Rows[0][0].ToString());
+            comandoGeos.Parameters.AddWithValue("@Status", 1);
+            comandoGeos.Parameters.AddWithValue("@Special", 1);
+            comandoGeos.Parameters.AddWithValue("@NumberHighAvailability", 12);
+            comandoGeos.Parameters.AddWithValue("@NumberLowAvailability", 13);
+            comandoGeos.Parameters.AddWithValue("@NumberMediumAvailability", 15);
+            comandoGeos.CommandType = CommandType.Text;
+            var newIdDispatchCenter = comandoGeos.ExecuteScalar();
+
+            progressBar1.Value = progressBar1.Value + 25;
+
+            query = "insert into DispatchCenterPolygons (DispatchCenterId,PolygonId,Active,SuperArea,ElementaryArea,MunicipalityId) values ";
+            query += "(@DispatchCenterId,@PolygonId,@Active,@SuperArea,@ElementaryArea,@MunicipalityId)";
+            comandoGeos = new SqlCommand(query, connection);
+            comandoGeos.Parameters.AddWithValue("@DispatchCenterId", newIdDispatchCenter);
+            comandoGeos.Parameters.AddWithValue("@PolygonId", cmbIdMunicipioGeosWeb.SelectedItem.ToString().Split('-')[0]);
+            comandoGeos.Parameters.AddWithValue("@Active", 1);
+            comandoGeos.Parameters.AddWithValue("@SuperArea", 0);
+            comandoGeos.Parameters.AddWithValue("@ElementaryArea", "S");
+            comandoGeos.Parameters.AddWithValue("@MunicipalityId", DBNull.Value);
+            comandoGeos.CommandType = CommandType.Text;
+            comandoGeos.ExecuteNonQuery();
+            connection.Close();
+
+            DBAccessCadastro.ExecutarComando("update sys.\"Projects\" set \"ExtId\" = " + newIdDispatchCenter.ToString() + " where \"Id\" = " + cmbProjetos.SelectedItem.ToString().Split('-')[0], CommandType.Text, null, DBAccessCadastro.TypeCommand.ExecuteNonQuery);
+
+            progressBar1.Value = progressBar1.Value + 25;
+
+            #endregion
+
+            #region " Postes "
+
+            query = "select \"Id\",\"DistributorPoleId\",\"DistributorPoleCode\",\"Type\",\"InstallationDate\", \"Material\",\"Height\",\"Effort\",ST_X(ST_AsText(ST_Transform(\"geom\",3857))) xp,ST_Y(ST_AsText(ST_Transform(\"geom\",3857))) yp from sys.\"getPoles\"(" + cmbProjetos.SelectedItem.ToString().Split('-')[0] + ")";
+            DataTable dtDados = (DataTable)DBAccessCadastro.ExecutarComando(query, CommandType.Text, null, DBAccessCadastro.TypeCommand.ExecuteDataTable);
+            progressBar1.Maximum = dtDados.Rows.Count;
+
+            //TESTAR QUAL O MAIS RÁPIDO
+            Export_Poles_GeosCadastro_to_GeosWeb_tAsync(dtDados); //retornando Task
+            //ou
+            //Export_Poles_GeosCadastro_to_GeosWeb_vAsync(dtDados, Convert.ToInt32(cmbIdMunicipioGeosWeb.SelectedItem.ToString().Split('-')[0]));//retornando void
+
+            #endregion
+
+        }
+        private void Export_Poles_GeosCadastro_to_GeosWeb_vAsync(DataTable listaPostesCADASTRO, int IdMunicipio)
+        {
+            using (SqlConnection connection = new SqlConnection(DBSettingGeos.ConnectionString))
+            {
+                connection.OpenAsync();
+
+                SqlCommand command = connection.CreateCommand();
+                command.Connection = connection;
+
+                try
+                {
+                    progressBar1.Value = 0;
+                    progressBar1.Maximum = listaPostesCADASTRO.Rows.Count;
+
+                    for (int x = 0; x <= listaPostesCADASTRO.Rows.Count - 1; x++)
+                    {
+
+                        string query = "insert into poles (extid, barrament, materialid, typeid, xp, yp, poleeffortid, poleheightid, municipalityid, organizationid, assetbit, su_count, su_irregular) ";
+                        query += " values (@extid, @barrament, @materialid, @typeid, @xp, @yp, @poleeffortid, @poleheightid, @municipalityid, @organizationid, @assetbit, @su_count, @su_irregular)";
+
+                        int materialId = 0;
+                        switch (listaPostesCADASTRO.Rows[x]["Material"])
+                        {
+                            case "Fibra":
+                                materialId = 4;
+                                break;
+                            case "Ferro":
+                                materialId = 2;
+                                break;
+                            case "Madeira":
+                                materialId = 3;
+                                break;
+                            case "Concreto":
+                                materialId = 1;
+                                break;
+                            default:
+                                materialId = 0;
+                                break;
+                        }
+
+                        int TypeId = 0;
+                        switch (listaPostesCADASTRO.Rows[x]["Type"])
+                        {
+                            case "IP":
+                                TypeId = 5;
+                                break;
+                            case "Circular":
+                                TypeId = 1;
+                                break;
+                            case "Fly":
+                                TypeId = 90;
+                                break;
+                            case "Torre Triangular":
+                                TypeId = 8;
+                                break;
+                            case "Duplo T":
+                                TypeId = 2;
+                                break;
+                            case "Fantasma":
+                                TypeId = 91;
+                                break;
+                            default:
+                                TypeId = 0;
+                                break;
+                        }
+
+                        SqlCommand comandoGeos = new SqlCommand(query, connection);
+                        comandoGeos.Parameters.AddWithValue("@extid", listaPostesCADASTRO.Rows[x]["Id"]);
+                        comandoGeos.Parameters.AddWithValue("@barrament", listaPostesCADASTRO.Rows[x]["DistributorPoleCode"]);
+                        comandoGeos.Parameters.AddWithValue("@materialid", materialId);
+                        comandoGeos.Parameters.AddWithValue("@typeid", TypeId);
+                        comandoGeos.Parameters.AddWithValue("@xp", listaPostesCADASTRO.Rows[x]["xp"]);
+                        comandoGeos.Parameters.AddWithValue("@yp", listaPostesCADASTRO.Rows[x]["yp"]);
+                        comandoGeos.Parameters.AddWithValue("@poleeffortid", listaPostesCADASTRO.Rows[x]["effort"]);
+                        comandoGeos.Parameters.AddWithValue("@poleheightid", listaPostesCADASTRO.Rows[x]["height"]);
+                        comandoGeos.Parameters.AddWithValue("@municipalityid", IdMunicipio);
+                        comandoGeos.Parameters.AddWithValue("@organizationid", 1);
+                        comandoGeos.Parameters.AddWithValue("@assetbit", 0);
+                        comandoGeos.Parameters.AddWithValue("@su_count", 0);
+                        comandoGeos.Parameters.AddWithValue("@su_irregular", 0);
+                        comandoGeos.CommandType = CommandType.Text;
+                        comandoGeos.ExecuteNonQueryAsync();
+
+                        progressBar1.Value = progressBar1.Value + 1;
+
+                        lblProgresso.Text = progressBar1.Value.ToString() + "/" + listaPostesCADASTRO.Rows.Count.ToString();
+                        lblPorcento.Text = Convert.ToString((progressBar1.Value * 100) / listaPostesCADASTRO.Rows.Count) + "%";
+
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "erro");
+                }
+            }
+        }
+        private async Task Export_Poles_GeosCadastro_to_GeosWeb_tAsync(DataTable dados)
         {
 
             await InserirPostes_CadastroXGeosWebAsync(dados, Convert.ToInt32(cmbIdMunicipioGeosWeb.SelectedItem.ToString().Split('-')[0]));
@@ -684,85 +866,6 @@ namespace ETL2_GeosCadastroXGeosWeb
             }
 
         }
-
-        private void btnSincronizar_Click_1(object sender, EventArgs e)
-        {
-            string query = "";
-
-            #region " Organização "
-
-            DataTable dtDadosMunicipio = (DataTable)DBAccessGeos.ExecutarComando("select name from Municipalities where id =" + cmbIdMunicipioGeosWeb.SelectedItem.ToString().Split('-')[0], CommandType.Text, null, DBAccessGeos.TypeCommand.ExecuteDataTable);
-            query = "Insert Into Organizations ([Name],[OrganizationTypeId],[ExtId],[LongName],[CNPJ],[Rua],[No],[Complementary],[City],[State],[CEP],[Telephone1],[DDD1],[Telephone2],[DDD2],[Email1],[Email2],[Barrio],[Active],[ExpirationDate],[AccountContract],[CreationDate],[MunicipalityId]) ";
-            query += "output inserted.OrganizationId values (";
-            query += "'Pref." + dtDadosMunicipio.Rows[0][0].ToString() + "',5,0,";
-            query += "'Pref." + dtDadosMunicipio.Rows[0][0].ToString() + "',";
-            query += "null, NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,1,NULL,NULL,NULL,NULL,";
-            query += cmbIdMunicipioGeosWeb.SelectedItem.ToString().Split('-')[0] + ")";
-            var newIdOrganization = DBAccessGeos.ExecutarComando(query, CommandType.Text, null, DBAccessGeos.TypeCommand.ExecuteScalar);
-
-            progressBar1.Value = progressBar1.Value + 10;
-
-            query = "INSERT INTO OrganizationMunicipalities(OrganizationId, MunicipalityId, Active) ";
-            query += "VALUES(" + newIdOrganization.ToString() + "," + cmbIdMunicipioGeosWeb.SelectedItem.ToString().Split('-')[0] + ", 1)";
-            DBAccessGeos.ExecutarComando(query, CommandType.Text, null, DBAccessGeos.TypeCommand.ExecuteNonQuery);
-
-            progressBar1.Value = progressBar1.Value + 20;
-
-            #endregion
-
-            #region " Centro de Despacho "
-
-            progressBar1.Value = progressBar1.Value + 20;
-
-            SqlConnection connection = new SqlConnection(DBSettingGeos.ConnectionString);
-            connection.Open();
-
-            query = "insert into DispatchCenters (OrganizationId,Name,Status,Special,NumberHighAvailability,NumberLowAvailability,NumberMediumAvailability) ";
-            query += "output inserted.id values (@OrganizationId,@Name,@Status,@Special,@NumberHighAvailability,@NumberLowAvailability,@NumberMediumAvailability)";
-
-            SqlCommand comandoGeos = new SqlCommand(query, connection);
-            comandoGeos.Parameters.AddWithValue("@OrganizationId", 1);
-            comandoGeos.Parameters.AddWithValue("@Name", "Cadastro da Rede Elétrica de " + dtDadosMunicipio.Rows[0][0].ToString());
-            comandoGeos.Parameters.AddWithValue("@Status", 1);
-            comandoGeos.Parameters.AddWithValue("@Special", 1);
-            comandoGeos.Parameters.AddWithValue("@NumberHighAvailability", 12);
-            comandoGeos.Parameters.AddWithValue("@NumberLowAvailability", 13);
-            comandoGeos.Parameters.AddWithValue("@NumberMediumAvailability", 15);
-            comandoGeos.CommandType = CommandType.Text;
-            var newIdDispatchCenter = comandoGeos.ExecuteScalar();
-
-            progressBar1.Value = progressBar1.Value + 25;
-
-            query = "insert into DispatchCenterPolygons (DispatchCenterId,PolygonId,Active,SuperArea,ElementaryArea,MunicipalityId) values ";
-            query += "(@DispatchCenterId,@PolygonId,@Active,@SuperArea,@ElementaryArea,@MunicipalityId)";
-            comandoGeos = new SqlCommand(query, connection);
-            comandoGeos.Parameters.AddWithValue("@DispatchCenterId", newIdDispatchCenter);
-            comandoGeos.Parameters.AddWithValue("@PolygonId", cmbIdMunicipioGeosWeb.SelectedItem.ToString().Split('-')[0]);
-            comandoGeos.Parameters.AddWithValue("@Active", 1);
-            comandoGeos.Parameters.AddWithValue("@SuperArea", 0);
-            comandoGeos.Parameters.AddWithValue("@ElementaryArea", "S");
-            comandoGeos.Parameters.AddWithValue("@MunicipalityId", DBNull.Value);
-            comandoGeos.CommandType = CommandType.Text;
-            comandoGeos.ExecuteNonQuery();
-            connection.Close();
-
-            DBAccessCadastro.ExecutarComando("update sys.\"Projects\" set \"ExtId\" = " + newIdDispatchCenter.ToString() + " where \"Id\" = " + cmbProjetos.SelectedItem.ToString().Split('-')[0], CommandType.Text, null, DBAccessCadastro.TypeCommand.ExecuteNonQuery);
-
-            progressBar1.Value = progressBar1.Value + 25;
-
-            #endregion
-
-            #region " Postes "
-
-            query = "select \"Id\",\"DistributorPoleId\",\"DistributorPoleCode\",\"Type\",\"InstallationDate\", \"Material\",\"Height\",\"Effort\",ST_X(ST_AsText(ST_Transform(\"geom\",3857))) xp,ST_Y(ST_AsText(ST_Transform(\"geom\",3857))) yp from sys.\"getPoles\"(" + cmbProjetos.SelectedItem.ToString().Split('-')[0] + ")";
-            DataTable dtDados = (DataTable)DBAccessCadastro.ExecutarComando(query, CommandType.Text, null, DBAccessCadastro.TypeCommand.ExecuteDataTable);
-            progressBar1.Maximum = dtDados.Rows.Count;
-            ExportarDados_SQLCadastro_SQLGeos_LOCAL_Async(dtDados);
-
-            #endregion
-
-        }
-
         private void button1_Click(object sender, EventArgs e)
         {
 
@@ -885,11 +988,10 @@ namespace ETL2_GeosCadastroXGeosWeb
 
 
         }
-
         private void btnInstacaoa_Click(object sender, EventArgs e)
         {
 
-            string query = "select \"Id\",\"poleid\",\"Plate\",\"SubType\",ST_X(ST_AsText(ST_Transform(\"geom\",3857))) xp,ST_Y(ST_AsText(ST_Transform(\"geom\",3857))) yp,\"phasetype\" ";
+            string query = "select \"Id\",coalesce(\"poleid\",0) as \"poleid\",\"Plate\",\"SubType\",ST_X(ST_AsText(ST_Transform(\"geom\",3857))) xp,ST_Y(ST_AsText(ST_Transform(\"geom\",3857))) yp,\"phasetype\" ";
             query += "from sys.\"exportInstallationsToGeosweb\"(" + cmbProjetos.SelectedItem.ToString().Split('-')[0] + ")";
             DataTable dtDados = (DataTable)DBAccessCadastro.ExecutarComando(query, CommandType.Text, null, DBAccessCadastro.TypeCommand.ExecuteDataTable);
 
@@ -961,16 +1063,92 @@ namespace ETL2_GeosCadastroXGeosWeb
                 }
             }
         }
-
         private void btnETL3_Click(object sender, EventArgs e)
         {
-            //string query = "select id from serviceorders so ";
-            //query += "where id in (select serviceorderid from DispatchCenterServiceOrders where dispatchcenterid in  ";
-            //query += "and secondarystateid = 4";
-            //DataTable dtDados = (DataTable)DBAccessGeos.ExecutarComando(query, CommandType.Text, null, DBAccessGeos.TypeCommand.ExecuteDataTable);
+            string caminhoPasta = "D:\\eNecad\\Fotos\\UAUA\\";
+            string categoria = "";
+            string linha, barramento = "";
+            string query = "select \"GeoPoints\".\"Code\", cfg.\"getdomaindescbycode\"(32, 'PhotoCategoryTypes', \"PhotoCategorizations\".\"Category\"::text) as \"Category\", ";
+            query += "\"Photos\".\"Path\"::text as \"PhotoLinks\" ";
+            query += "from sys.\"GeoPoints\" ";
+            query += "inner join sys.\"Tasks\" ON \"Tasks\".\"GeoPointId\" = \"GeoPoints\".\"Id\" ";
+            query += "inner join sys.\"Photos\" ON \"Photos\".\"TaskId\" = \"Tasks\".\"Id\" ";
+            query += "inner join sys.\"PhotoCategorizations\" ON \"PhotoCategorizations\".\"PhotoId\" = \"Photos\".\"Id\" ";
+            query += "where \"GeoPoints\".\"ProjectId\" = 32  and cfg.\"getdomaindescbycode\"(32, 'PhotoCategoryTypes', \"PhotoCategorizations\".\"Category\"::text) <>'Excluída' ";
+            query += "and \"GeoPoints\".\"Code\" <> 'X999999' ";
+            query += "order by \"GeoPoints\".\"Code\", cfg.\"getdomaindescbycode\"(32, 'PhotoCategoryTypes', \"PhotoCategorizations\".\"Category\"::text) ";
+            DataTable dtPhotos = (DataTable)DBAccessCadastro.ExecutarComando(query, CommandType.Text, null, DBAccessCadastro.TypeCommand.ExecuteDataTable);
 
-            //RunAsync().Wait();
+            using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"D:\eNecad\NeoEnergia\Uaua\EntregaFotos.txt"))
+            {
+                barramento = dtPhotos.Rows[0]["Code"].ToString();
+                linha = "<div class=\"container\">";
+                file.WriteLine(linha);
+                linha = "<div class=\"row\">";
+                file.WriteLine(linha);
+                linha = "<div class=\"col -md-4 col-md-offset-4\">";
+                file.WriteLine(linha);
+                linha = "<ul id = \"treeview\">";
+                file.WriteLine(linha);
+                linha = "<li data-expanded=\"false\">" + dtPhotos.Rows[0]["Code"].ToString();
+                file.WriteLine(linha);
+                linha = "<ul>";
+                file.WriteLine(linha);
+                for (int x = 1; x <= dtPhotos.Rows.Count - 1; x++)
+                {
+                    if (barramento != dtPhotos.Rows[x]["Code"].ToString())
+                    {
+                        linha = "</ul>";
+                        file.WriteLine(linha);
+                        linha = "</li>";
+                        file.WriteLine(linha);
+                        linha = "<li data-expanded=\"false\">" + dtPhotos.Rows[x]["Code"].ToString();
+                        file.WriteLine(linha);
+                        linha = "<ul>";
+                        file.WriteLine(linha);
+                    }
+                    switch (dtPhotos.Rows[x]["Category"].ToString())
+                    {
+                        case "PAN":
+                            categoria = "Panorâmica";
+                            break;
+                        case "IP":
+                            categoria = "IP";
+                            break;
+                        case "RD":
+                            categoria = "Rede";
+                            break;
+                        case "UM":
+                            categoria = "Uso Mútuo";
+                            break;
+                        case "INS":
+                            categoria = "Instalação";
+                            break;
+                        default:
+                            categoria = "T";
+                            break;
+                    }
+                    linha = "<li><a href=\"" + caminhoPasta + dtPhotos.Rows[x]["PhotoLinks"].ToString().Replace("https://geosweb.blob.core.windows.net/pictures/COELBA/BA/UAUA/", "") + "\">" + categoria + "</a></li>";
+                    file.WriteLine(linha);
+                    barramento = dtPhotos.Rows[x]["Code"].ToString();
+                }
+                linha = "</ul>";
+                file.WriteLine(linha);
+                linha = "</li>";
+                file.WriteLine(linha);
+                linha = "</ul>";
+                file.WriteLine(linha);
+                linha = "</div>";
+                file.WriteLine(linha);
+                linha = "</div>";
+                file.WriteLine(linha);
+                linha = "</div>";
+                file.WriteLine(linha);
+                file.Close();
+            }
+            MessageBox.Show("Arquivo criado com sucesso.");
         }
+
         static async Task RunAsync(DataTable dtOSEntregues)
         {
             using (var client = new HttpClient())
@@ -1005,5 +1183,105 @@ namespace ETL2_GeosCadastroXGeosWeb
                 //}
             }
         }
+
+        #region " Entrega Fotos "
+        private void btnEntregaFotosCoelba_Click_1(object sender, EventArgs e)
+        {
+            string caminhoPasta;
+            string query = "select \"GeoPoints\".\"Code\", cfg.\"getdomaindescbycode\"(" + cmbProjetos.SelectedItem.ToString().Split('-')[0] + ", 'PhotoCategoryTypes', \"PhotoCategorizations\".\"Category\"::text) as \"Category\", ";
+            query += "\"Photos\".\"Path\"::text as \"PhotoLinks\", \"Photos\".\"Id\" ";
+            query += "from sys.\"GeoPoints\" ";
+            query += "inner join sys.\"Tasks\" ON \"Tasks\".\"GeoPointId\" = \"GeoPoints\".\"Id\" ";
+            query += "inner join sys.\"Photos\" ON \"Photos\".\"TaskId\" = \"Tasks\".\"Id\" ";
+            query += "inner join sys.\"PhotoCategorizations\" ON \"PhotoCategorizations\".\"PhotoId\" = \"Photos\".\"Id\" ";
+            query += "where \"GeoPoints\".\"ProjectId\" = " + cmbProjetos.SelectedItem.ToString().Split('-')[0] + " " ;
+            query += "and cfg.\"getdomaindescbycode\"(" + cmbProjetos.SelectedItem.ToString().Split('-')[0] + ", 'PhotoCategoryTypes', \"PhotoCategorizations\".\"Category\"::text) <>'Excluída' ";
+            query += "and \"GeoPoints\".\"Code\" <> 'X999999' ";
+            query += "order by \"GeoPoints\".\"Code\", cfg.\"getdomaindescbycode\"(" + cmbProjetos.SelectedItem.ToString().Split('-')[0] + ", 'PhotoCategoryTypes', \"PhotoCategorizations\".\"Category\"::text) ";
+            DataTable dtPhotos = (DataTable)DBAccessCadastro.ExecutarComando(query, CommandType.Text, null, DBAccessCadastro.TypeCommand.ExecuteDataTable);
+
+            progressBar1.Value = 0;
+            progressBar1.Maximum = dtPhotos.Rows.Count;
+
+            string barramento = dtPhotos.Rows[0]["Code"].ToString();
+            Directory.CreateDirectory(txtDiretorioProjeto.Text + "\\" + barramento);
+            Directory.CreateDirectory(txtDiretorioProjeto.Text + "\\" + barramento + "\\IP");
+            Directory.CreateDirectory(txtDiretorioProjeto.Text + "\\" + barramento + "\\PANORAMICA");
+            Directory.CreateDirectory(txtDiretorioProjeto.Text + "\\" + barramento + "\\INSTALACAO");
+            Directory.CreateDirectory(txtDiretorioProjeto.Text + "\\" + barramento + "\\USO_MUTUO");
+            Directory.CreateDirectory(txtDiretorioProjeto.Text + "\\" + barramento + "\\REDE");
+
+            for (int x = 0; x <= dtPhotos.Rows.Count - 1; x++)
+            {
+                if (barramento != dtPhotos.Rows[x]["Code"].ToString())
+                {
+                    Directory.CreateDirectory(txtDiretorioProjeto.Text + "\\" + barramento);
+                    Directory.CreateDirectory(txtDiretorioProjeto.Text + "\\" + barramento + "\\IP");
+                    Directory.CreateDirectory(txtDiretorioProjeto.Text + "\\" + barramento + "\\PANORAMICA");
+                    Directory.CreateDirectory(txtDiretorioProjeto.Text + "\\" + barramento + "\\INSTALACAO");
+                    Directory.CreateDirectory(txtDiretorioProjeto.Text + "\\" + barramento + "\\USO_MUTUO");
+                    Directory.CreateDirectory(txtDiretorioProjeto.Text + "\\" + barramento + "\\REDE");
+                }
+                switch (dtPhotos.Rows[x]["Category"].ToString())
+                {
+                    case "PAN":
+                        caminhoPasta = txtDiretorioProjeto.Text + "\\" + barramento + "\\PANORAMICA\\";
+                        break;
+                    case "IP":
+                        caminhoPasta = txtDiretorioProjeto.Text + "\\" + barramento + "\\IP\\";
+                        break;
+                    case "RD":
+                        caminhoPasta = txtDiretorioProjeto.Text + "\\" + barramento + "\\REDE\\";
+                        break;
+                    case "UM":
+                        caminhoPasta = txtDiretorioProjeto.Text + "\\" + barramento + "\\USO_MUTUO\\";
+                        break;
+                    case "INS":
+                        caminhoPasta = txtDiretorioProjeto.Text + "\\" + barramento + "\\INSTALACAO\\";
+                        break;
+                    default:
+                        caminhoPasta = txtDiretorioProjeto.Text + "\\" + barramento;
+                        break;
+                }
+                startDownload(dtPhotos.Rows[x]["PhotoLinks"].ToString(), caminhoPasta, Convert.ToInt32(dtPhotos.Rows[0]["Id"]));
+                barramento = dtPhotos.Rows[x]["Code"].ToString();
+                progressBar1.Value = progressBar1.Value + 1;
+                lblPorcento.Text = Convert.ToString((progressBar1.Value * 100) / dtPhotos.Rows.Count) + "%";
+            }
+        }
+        private void startDownload(string url, string pastaDestino, int IdPhoto)
+        {
+            Thread thread = new Thread(() =>
+            {
+                WebClient client = new WebClient();
+                client.DownloadProgressChanged += new DownloadProgressChangedEventHandler(client_DownloadProgressChanged);
+                client.DownloadFileCompleted += new AsyncCompletedEventHandler(client_DownloadFileCompleted);
+                string nomeArquivo = Path.GetFileName(url);
+                client.DownloadFileAsync(new Uri(url), pastaDestino + nomeArquivo);
+                //DBAccessCadastro.ExecutarComando("update sys.\"Photos\" set "IsDelivered" = true where \"Id\" = " + IdPhoto.ToString(), CommandType.Text, null, DBAccessCadastro.TypeCommand.ExecuteDataTable);
+            });
+            thread.Start();
+        }
+        void client_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
+        {
+            this.BeginInvoke((MethodInvoker)delegate
+            {
+                double bytesIn = double.Parse(e.BytesReceived.ToString());
+                double totalBytes = double.Parse(e.TotalBytesToReceive.ToString());
+                double percentage = bytesIn / totalBytes * 100;
+                lblAcompanhamentoDownload.Text = "Baixado: " + e.BytesReceived + " of " + e.TotalBytesToReceive;
+                progressBar2.Value = int.Parse(Math.Truncate(percentage).ToString());
+            });
+        }
+        void client_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
+        {
+            this.BeginInvoke((MethodInvoker)delegate
+            {
+                lblAcompanhamentoDownload.Text = "Download Completo";
+            });
+        }
+
+        #endregion
+
     }
 }

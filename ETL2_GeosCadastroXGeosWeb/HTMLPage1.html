@@ -1,0 +1,246 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <style id="cssStyle" type="text/css" media="all">
+        .tree, .tree ul {
+            margin: 0;
+            padding: 0;
+            list-style: none
+        }
+
+            .tree ul {
+                margin-left: 1em;
+                position: relative
+            }
+
+                .tree ul ul {
+                    margin-left: .5em
+                }
+
+                .tree ul:before {
+                    content: "";
+                    display: block;
+                    width: 0;
+                    position: absolute;
+                    top: 0;
+                    bottom: 0;
+                    left: 0;
+                    border-left: 1px solid
+                }
+
+            .tree li {
+                margin: 0;
+                padding: 0 1em;
+                line-height: 2em;
+                color: #369;
+                font-weight: 700;
+                position: relative
+            }
+
+            .tree ul li:before {
+                content: "";
+                display: block;
+                width: 10px;
+                height: 0;
+                border-top: 1px solid;
+                margin-top: -1px;
+                position: absolute;
+                top: 1em;
+                left: 0
+            }
+
+            .tree ul li:last-child:before {
+                background: #fff;
+                height: auto;
+                top: 1em;
+                bottom: 0
+            }
+
+        .indicator {
+            margin-right: 5px;
+        }
+
+        .tree li a {
+            text-decoration: none;
+            color: #369;
+        }
+
+        .tree li button, .tree li button:active, .tree li button:focus {
+            text-decoration: none;
+            color: #369;
+            border: none;
+            background: transparent;
+            margin: 0px 0px 0px 0px;
+            padding: 0px 0px 0px 0px;
+            outline: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" style="margin-top:30px;">
+        <div class="row">
+            <div class="col-md-4">
+                <ul id="tree1">
+                    <p class="well" style="height:135px;">
+                        <strong>Initialization no parameters</strong>
+
+                        <br /> <code>$('#tree1').treed();</code>
+
+                    </p>
+                    <li>
+                        <a href="#">TECH</a>
+
+                        <ul>
+                            <li>Company Maintenance</li>
+                            <li>
+                                Employees
+                                <ul>
+                                    <li>
+                                        Reports
+                                        <ul>
+                                            <li>Report1</li>
+                                            <li>Report2</li>
+                                            <li>Report3</li>
+                                        </ul>
+                                    </li>
+                                    <li>Employee Maint.</li>
+                                </ul>
+                            </li>
+                            <li>Human Resources</li>
+                        </ul>
+                    </li>
+                    <li>
+                        XRP
+                        <ul>
+                            <li>Company Maintenance</li>
+                            <li>
+                                Employees
+                                <ul>
+                                    <li>
+                                        Reports
+                                        <ul>
+                                            <li>Report1</li>
+                                            <li>Report2</li>
+                                            <li>Report3</li>
+                                        </ul>
+                                    </li>
+                                    <li>Employee Maint.</li>
+                                </ul>
+                            </li>
+                            <li>Human Resources</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-4">
+                <p class="well" style="height:135px;">
+                    <strong>Initialization optional parameters</strong>
+
+                    <br /> <code>$('#tree2').treed({openedClass : 'glyphicon-folder-open', closedClass : 'glyphicon-folder-close'});</code>
+
+                </p>
+                <ul id="tree2">
+                    <li>
+                        <a href="#">TECH</a>
+
+                        <ul>
+                            <li>Company Maintenance</li>
+                            <li>
+                                Employees
+                                <ul>
+                                    <li>
+                                        Reports
+                                        <ul>
+                                            <li>Report1</li>
+                                            <li>Report2</li>
+                                            <li>Report3</li>
+                                        </ul>
+                                    </li>
+                                    <li>Employee Maint.</li>
+                                </ul>
+                            </li>
+                            <li>Human Resources</li>
+                        </ul>
+                    </li>
+                    <li>
+                        XRP
+                        <ul>
+                            <li>Company Maintenance</li>
+                            <li>
+                                Employees
+                                <ul>
+                                    <li>
+                                        Reports
+                                        <ul>
+                                            <li>Report1</li>
+                                            <li>Report2</li>
+                                            <li>Report3</li>
+                                        </ul>
+                                    </li>
+                                    <li>Employee Maint.</li>
+                                </ul>
+                            </li>
+                            <li>Human Resources</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-4">
+                <p class="well" style="height:135px;">
+                    <strong>Initialization optional parameters</strong>
+
+                    <br /> <code>$('#tree3').treed({openedClass:'glyphicon-chevron-right', closedClass:'glyphicon-chevron-down'});</code>
+
+                </p>
+                <ul id="tree3">
+                    <li>
+                        <a href="#">TECH</a>
+
+                        <ul>
+                            <li>Company Maintenance</li>
+                            <li>
+                                Employees
+                                <ul>
+                                    <li>
+                                        Reports
+                                        <ul>
+                                            <li>Report1</li>
+                                            <li>Report2</li>
+                                            <li>Report3</li>
+                                        </ul>
+                                    </li>
+                                    <li>Employee Maint.</li>
+                                </ul>
+                            </li>
+                            <li>Human Resources</li>
+                        </ul>
+                    </li>
+                    <li>
+                        XRP
+                        <ul>
+                            <li>Company Maintenance</li>
+                            <li>
+                                Employees
+                                <ul>
+                                    <li>
+                                        Reports
+                                        <ul>
+                                            <li>Report1</li>
+                                            <li>Report2</li>
+                                            <li>Report3</li>
+                                        </ul>
+                                    </li>
+                                    <li>Employee Maint.</li>
+                                </ul>
+                            </li>
+                            <li>Human Resources</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
