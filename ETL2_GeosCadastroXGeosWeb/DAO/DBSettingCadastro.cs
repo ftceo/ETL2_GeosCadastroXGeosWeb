@@ -13,7 +13,8 @@ namespace DAO
             try
             {
                 //Provider = PostgreSQLOLEDBProvider; Data Source = myServerAddress; location = myDataBase; User ID = myUsername; password = myPassword; timeout = 1000;
-                _connectionString = "Server=191.232.160.227;Port=25437;User Id=postgres;Password=stXYZ321#@;Database=dbgeoscad;";
+                _connectionString = "Server=191.232.160.227;Port=25437;User Id=postgres;Password=stXYZ321#@;Database=dbgeoscad;Timeout=300;CommandTimeout = 300;";
+                //_connectionString = "Server=191.232.160.227;Port=25437;User Id=postgres;Password=stXYZ321#@;Database=dbgeoscad_dev;Timeout=300;CommandTimeout = 300;";
                 _providerName = "Npgsql";
                 _tipoBanco = "ePgSQL";
                 _sufixoBanco = "@";

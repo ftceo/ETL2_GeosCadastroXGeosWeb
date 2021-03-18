@@ -2,20 +2,18 @@
 
 namespace DAO
 {
-    public class DBSettingGeos
+    public class DBSettingMobile
     {
-        private DBSettingGeos()
+
+        private DBSettingMobile()
         {
         }
-        static DBSettingGeos()
+        static DBSettingMobile()
         {
             try
             {
-                _connectionString = "Data Source=geoscadastro.database.windows.net;Initial Catalog=CadastroNetAssetDb_Demo;Persist Security Info=True;User ID=dbEnecadCad;Password=En3c4d@g30sW3b";
-                //_connectionString = "Data Source=geoscadastro.database.windows.net;Initial Catalog=CadastroNetAssetDb_Develop;Persist Security Info=True;User ID=dbEnecadCad;Password=En3c4d@g30sW3b";
-                //_connectionString = "Data Source=DESKTOP-E999VKR\\SRVSQLSERVER2019;Initial Catalog=CadastroNetAssetDb_Demo20201211;Integrated Security=True";
-                _providerName = "System.Data.SqlClient";
-                _tipoBanco = "eSQL";
+                _connectionString = "Server=191.232.160.227;Port=25437;User Id=postgres;Password=stXYZ321#@;Database=dbgeoscad;Timeout=300;CommandTimeout = 300;";
+                _providerName = "System.Data.SQLite";
                 _sufixoBanco = "@";
             }
             catch (Exception)
@@ -39,11 +37,14 @@ namespace DAO
         }
         public static string ConnectionString
         {
-            get
-            {
-                return _connectionString;
-            }
+            //get
+            //{
+            //    return _connectionString;
+            //}
+             get; set; 
         }
+
+        public string ConectionStringSQLite { get; set; }
 
         private static string _providerName;
         public string pproviderName
@@ -104,5 +105,6 @@ namespace DAO
                 return _sufixoBanco;
             }
         }
+
     }
 }

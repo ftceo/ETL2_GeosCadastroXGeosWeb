@@ -54,9 +54,17 @@
             this.txtDiretorioProjeto = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.progressBar2 = new System.Windows.Forms.ProgressBar();
+            this.button2 = new System.Windows.Forms.Button();
+            this.txtNumberOS = new System.Windows.Forms.TextBox();
+            this.button3 = new System.Windows.Forms.Button();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.btnGerarSQLite = new System.Windows.Forms.Button();
+            this.txtCaminhoSQLite = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
+            this.groupBox4.SuspendLayout();
             this.SuspendLayout();
             // 
             // progressBar1
@@ -83,7 +91,7 @@
             // 
             this.btnDadosPrimarios.Location = new System.Drawing.Point(718, 26);
             this.btnDadosPrimarios.Name = "btnDadosPrimarios";
-            this.btnDadosPrimarios.Size = new System.Drawing.Size(253, 52);
+            this.btnDadosPrimarios.Size = new System.Drawing.Size(253, 38);
             this.btnDadosPrimarios.TabIndex = 29;
             this.btnDadosPrimarios.Text = "Importar Dados Primários";
             this.btnDadosPrimarios.UseVisualStyleBackColor = true;
@@ -234,7 +242,7 @@
             // lblProgresso
             // 
             this.lblProgresso.AutoSize = true;
-            this.lblProgresso.Location = new System.Drawing.Point(449, 423);
+            this.lblProgresso.Location = new System.Drawing.Point(434, 2);
             this.lblProgresso.Name = "lblProgresso";
             this.lblProgresso.Size = new System.Drawing.Size(0, 17);
             this.lblProgresso.TabIndex = 4;
@@ -314,16 +322,89 @@
             this.progressBar2.TabIndex = 9;
             this.progressBar2.Visible = false;
             // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(391, 497);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(147, 28);
+            this.button2.TabIndex = 10;
+            this.button2.Text = "button2";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Visible = false;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
+            // txtNumberOS
+            // 
+            this.txtNumberOS.Location = new System.Drawing.Point(566, 496);
+            this.txtNumberOS.Name = "txtNumberOS";
+            this.txtNumberOS.Size = new System.Drawing.Size(418, 22);
+            this.txtNumberOS.TabIndex = 11;
+            this.txtNumberOS.Visible = false;
+            // 
+            // button3
+            // 
+            this.button3.Location = new System.Drawing.Point(229, 502);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(147, 23);
+            this.button3.TabIndex = 12;
+            this.button3.Text = "button3";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Visible = false;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
+            // groupBox4
+            // 
+            this.groupBox4.Controls.Add(this.btnGerarSQLite);
+            this.groupBox4.Controls.Add(this.txtCaminhoSQLite);
+            this.groupBox4.Controls.Add(this.label5);
+            this.groupBox4.Controls.Add(this.lblProgresso);
+            this.groupBox4.Location = new System.Drawing.Point(15, 421);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(988, 54);
+            this.groupBox4.TabIndex = 13;
+            this.groupBox4.TabStop = false;
+            // 
+            // btnGerarSQLite
+            // 
+            this.btnGerarSQLite.Location = new System.Drawing.Point(794, 16);
+            this.btnGerarSQLite.Name = "btnGerarSQLite";
+            this.btnGerarSQLite.Size = new System.Drawing.Size(176, 32);
+            this.btnGerarSQLite.TabIndex = 7;
+            this.btnGerarSQLite.Text = "Gerar SQLite";
+            this.btnGerarSQLite.UseVisualStyleBackColor = true;
+            this.btnGerarSQLite.Click += new System.EventHandler(this.btnGerarSQLite_Click);
+            // 
+            // txtCaminhoSQLite
+            // 
+            this.txtCaminhoSQLite.Location = new System.Drawing.Point(101, 19);
+            this.txtCaminhoSQLite.Name = "txtCaminhoSQLite";
+            this.txtCaminhoSQLite.Size = new System.Drawing.Size(673, 22);
+            this.txtCaminhoSQLite.TabIndex = 6;
+            this.txtCaminhoSQLite.Text = "Data Source=D:\\eNecad\\BancoMobile\\MapaServico\\GeosMobile_MapaServico.db;Version=3" +
+    ";";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(18, 23);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(67, 17);
+            this.label5.TabIndex = 5;
+            this.label5.Text = "Caminho:";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1015, 537);
+            this.ClientSize = new System.Drawing.Size(1015, 485);
+            this.Controls.Add(this.groupBox4);
+            this.Controls.Add(this.button3);
+            this.Controls.Add(this.txtNumberOS);
+            this.Controls.Add(this.button2);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.lblAcompanhamentoDownload);
             this.Controls.Add(this.btnEntraFotos);
             this.Controls.Add(this.lblPorcento);
-            this.Controls.Add(this.lblProgresso);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.progressBar1);
@@ -338,6 +419,8 @@
             this.groupBox2.PerformLayout();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
+            this.groupBox4.ResumeLayout(false);
+            this.groupBox4.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -370,6 +453,13 @@
         private System.Windows.Forms.TextBox txtDiretorioProjeto;
         private System.Windows.Forms.Button btnEntregaFotosCoelba;
         private System.Windows.Forms.ProgressBar progressBar2;
+        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.TextBox txtNumberOS;
+        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.GroupBox groupBox4;
+        private System.Windows.Forms.Button btnGerarSQLite;
+        private System.Windows.Forms.TextBox txtCaminhoSQLite;
+        private System.Windows.Forms.Label label5;
     }
 }
 

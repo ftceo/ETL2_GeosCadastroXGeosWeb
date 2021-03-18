@@ -5,15 +5,14 @@ using System.Data.Common;
 
 namespace DAO
 {
-    public class DBAccessCadastro
+    public class DBAccessMobile
     {
-
         public static DbCommand CriarComando(string cmbText, CommandType cmbType, List<DbParameter> listParameter)
         {
 
-            DbProviderFactory factory = DbProviderFactories.GetFactory(DBSettingCadastro.ProviderName);
+            DbProviderFactory factory = DbProviderFactories.GetFactory(DBSettingMobile.ProviderName);
             DbConnection conexao = factory.CreateConnection();
-            conexao.ConnectionString = DBSettingCadastro.ConnectionString;
+            conexao.ConnectionString = DBSettingMobile.ConnectionString;
             DbCommand comando = conexao.CreateCommand();
             comando.CommandText = cmbText;
             comando.CommandType = cmbType;
@@ -30,11 +29,11 @@ namespace DAO
         }
         public static DbParameter CriarParametro(string nomeParametro, DbType tipoParametro, object valorParametro)
         {
-            DbProviderFactory factory = DbProviderFactories.GetFactory(DBSettingCadastro.ProviderName);
+            DbProviderFactory factory = DbProviderFactories.GetFactory(DBSettingMobile.ProviderName);
             DbParameter parametro = factory.CreateParameter();
             if (!(parametro == null))
             {
-                parametro.ParameterName = DBSettingCadastro.SufixoBanco + nomeParametro;
+                parametro.ParameterName = DBSettingMobile.SufixoBanco + nomeParametro;
                 parametro.DbType = tipoParametro;
                 parametro.Value = valorParametro;
             }
@@ -153,7 +152,5 @@ namespace DAO
             ExecuteScalar,
             ExecuteDataTable,
         }
-
     }
-
 }

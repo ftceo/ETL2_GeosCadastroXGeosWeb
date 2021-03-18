@@ -54,11 +54,11 @@ namespace ETL2_GeosCadastroXGeosWeb
             }
 
             string caminhoPasta;
-            string TipoFoto;
-            if (chkIP.Checked)
-            {
-                TipoFoto = "'IP'";
-            }
+            string TipoFoto = (chkIP.Checked ? "'IP'," : "") +
+                              (chkInstalacao.Checked ? "'INS'," : "") +
+                              (chkPanoramica.Checked ? "'PAN,'," : "") +
+                              (chkRede.Checked ? "'RD'," : "") +
+                              (chkUsuMutuo.Checked ? "'UM'" : "");
 
             listaLog = new List<LogDownloadFoto>();
 
@@ -69,9 +69,8 @@ namespace ETL2_GeosCadastroXGeosWeb
             query += "inner join sys.\"Photos\" ON \"Photos\".\"TaskId\" = \"Tasks\".\"Id\" ";
             query += "inner join sys.\"PhotoCategorizations\" ON \"PhotoCategorizations\".\"PhotoId\" = \"Photos\".\"Id\" ";
             query += "where \"GeoPoints\".\"ProjectId\" = " + cmbProjetos.SelectedItem.ToString().Split('-')[0] + " ";
-            query += "and cfg.\"getdomaindescbycode\"(" + cmbProjetos.SelectedItem.ToString().Split('-')[0] + ", 'PhotoCategoryTypes', \"PhotoCategorizations\".\"Category\"::text) <>'Excluída' ";
-            //query += "cfg.\"getdomaindescbycode\"(" + cmbProjetos.SelectedItem.ToString().Split('-')[0] + ", 'PhotoCategoryTypes', \"PhotoCategorizations\".\"Category\"::text) IN ()";
-            query += "and \"GeoPoints\".\"Code\" <> 'X999999' ";
+            query += "and cfg.\"getdomaindescbycode\"(" + cmbProjetos.SelectedItem.ToString().Split('-')[0] + ", 'PhotoCategoryTypes', \"PhotoCategorizations\".\"Category\"::text) IN (" + (TipoFoto.Substring(TipoFoto.Length - 1, 1) == "," ? TipoFoto.Substring(0, TipoFoto.Length - 1) : TipoFoto) + ") ";
+            query += "and \"GeoPoints\".\"Code\" <> 'X999999' and \"GeoPoints\".\"Code\" <> '' ";
             query += "order by \"GeoPoints\".\"Code\", cfg.\"getdomaindescbycode\"(" + cmbProjetos.SelectedItem.ToString().Split('-')[0] + ", 'PhotoCategoryTypes', \"PhotoCategorizations\".\"Category\"::text) ";
             DataTable dtPhotos = (DataTable)DBAccessCadastro.ExecutarComando(query, CommandType.Text, null, DBAccessCadastro.TypeCommand.ExecuteDataTable);
 
@@ -87,12 +86,30 @@ namespace ETL2_GeosCadastroXGeosWeb
                 {
                     barramentoAux = barramento;
                     if (!Directory.Exists(txtDiretorioProjeto.Text + "\\" + barramento)) { Directory.CreateDirectory(txtDiretorioProjeto.Text + "\\" + barramento); };
-                    if (!Directory.Exists(txtDiretorioProjeto.Text + "\\" + barramento + "\\ATIVOS")) { Directory.CreateDirectory(txtDiretorioProjeto.Text + "\\" + barramento + "\\ATIVOS"); };
-                    if (!Directory.Exists(txtDiretorioProjeto.Text + "\\" + barramento + "\\ATIVOS\\INSTALACAO")) { Directory.CreateDirectory(txtDiretorioProjeto.Text + "\\" + barramento + "\\ATIVOS\\INSTALACAO"); };
-                    if (!Directory.Exists(txtDiretorioProjeto.Text + "\\" + barramento + "\\ATIVOS\\REDE")) { Directory.CreateDirectory(txtDiretorioProjeto.Text + "\\" + barramento + "\\ATIVOS\\REDE"); };
-                    if (!Directory.Exists(txtDiretorioProjeto.Text + "\\" + barramento + "\\ATIVOS\\PANORAMICA")) { Directory.CreateDirectory(txtDiretorioProjeto.Text + "\\" + barramento + "\\ATIVOS\\PANORAMICA"); };
-                    if (!Directory.Exists(txtDiretorioProjeto.Text + "\\" + barramento + "\\IP")) { Directory.CreateDirectory(txtDiretorioProjeto.Text + "\\" + barramento + "\\IP"); };
-                    if (!Directory.Exists(txtDiretorioProjeto.Text + "\\" + barramento + "\\UM")) { Directory.CreateDirectory(txtDiretorioProjeto.Text + "\\" + barramento + "\\UM"); };
+                    if (chkRede.Checked || chkInstalacao.Checked || chkPanoramica.Checked)
+                    {
+                        if (!Directory.Exists(txtDiretorioProjeto.Text + "\\" + barramento + "\\ATIVOS")) { Directory.CreateDirectory(txtDiretorioProjeto.Text + "\\" + barramento + "\\ATIVOS"); };
+                    }
+                    if (chkInstalacao.Checked)
+                    {
+                        if (!Directory.Exists(txtDiretorioProjeto.Text + "\\" + barramento + "\\ATIVOS\\INSTALACAO")) { Directory.CreateDirectory(txtDiretorioProjeto.Text + "\\" + barramento + "\\ATIVOS\\INSTALACAO"); };
+                    }
+                    if (chkRede.Checked)
+                    {
+                        if (!Directory.Exists(txtDiretorioProjeto.Text + "\\" + barramento + "\\ATIVOS\\REDE")) { Directory.CreateDirectory(txtDiretorioProjeto.Text + "\\" + barramento + "\\ATIVOS\\REDE"); };
+                    }
+                    if (chkPanoramica.Checked)
+                    {
+                        if (!Directory.Exists(txtDiretorioProjeto.Text + "\\" + barramento + "\\ATIVOS\\PANORAMICA")) { Directory.CreateDirectory(txtDiretorioProjeto.Text + "\\" + barramento + "\\ATIVOS\\PANORAMICA"); };
+                    }
+                    if (chkIP.Checked)
+                    {
+                        if (!Directory.Exists(txtDiretorioProjeto.Text + "\\" + barramento + "\\IP")) { Directory.CreateDirectory(txtDiretorioProjeto.Text + "\\" + barramento + "\\IP"); };
+                    }
+                    if (chkUsuMutuo.Checked)
+                    {
+                        if (!Directory.Exists(txtDiretorioProjeto.Text + "\\" + barramento + "\\UM")) { Directory.CreateDirectory(txtDiretorioProjeto.Text + "\\" + barramento + "\\UM"); };
+                    }
                 }
                 switch (dtPhotos.Rows[x]["Category"].ToString())
                 {
@@ -115,8 +132,17 @@ namespace ETL2_GeosCadastroXGeosWeb
                         caminhoPasta = txtDiretorioProjeto.Text + "\\" + barramento;
                         break;
                 }
+
                 startDownload(dtPhotos.Rows[x]["PhotoLinks"].ToString(), caminhoPasta, Convert.ToInt32(dtPhotos.Rows[x]["Id"]));
-                barramento = dtPhotos.Rows[x]["Code"].ToString();
+                if (x <= dtPhotos.Rows.Count - 2)
+                {
+                    barramento = dtPhotos.Rows[x + 1]["Code"].ToString();
+                }
+                else
+                {
+                    barramento = dtPhotos.Rows[x]["Code"].ToString();
+                }
+
                 progressBar1.Value = progressBar1.Value + 1;
                 contador = x;
             }
@@ -195,14 +221,16 @@ namespace ETL2_GeosCadastroXGeosWeb
         }
         private void cmbProjetos_SelectedIndexChanged(object sender, EventArgs e)
         {
-            string query = "select count(*) from ";
-            query += "sys.\"Photos\" p join sys.\"Tasks\" t on p.\"TaskId\" = t.\"Id\" ";
-            query += "join sys.\"ServiceOrders\" s on t.\"ServiceOrderId\" = s.\"Id\" ";
-            query += "where \"ProjectId\" = " + cmbProjetos.SelectedItem.ToString().Split('-')[0];
+            string query = "select count(*) from sys.\"GeoPoints\" ";
+            query += "inner join sys.\"Tasks\" ON \"Tasks\".\"GeoPointId\" = \"GeoPoints\".\"Id\" ";
+            query += "inner join sys.\"Photos\" ON \"Photos\".\"TaskId\" = \"Tasks\".\"Id\" ";
+            query += "inner join sys.\"PhotoCategorizations\" ON \"PhotoCategorizations\".\"PhotoId\" = \"Photos\".\"Id\" ";
+            query += "where \"GeoPoints\".\"ProjectId\" = " + cmbProjetos.SelectedItem.ToString().Split('-')[0] + " ";
+            query += "and cfg.\"getdomaindescbycode\"(" + cmbProjetos.SelectedItem.ToString().Split('-')[0] + ", 'PhotoCategoryTypes', \"PhotoCategorizations\".\"Category\"::text) <>'Excluída' ";
+            query += "and \"GeoPoints\".\"Code\" <> 'X999999' ";
             DataTable dtFotos = (DataTable)DBAccessCadastro.ExecutarComando(query, CommandType.Text, null, DBAccessCadastro.TypeCommand.ExecuteDataTable);
             lblTotalRegistroFotos.Text = Convert.ToInt32(dtFotos.Rows[0][0]).ToString("N0");
         }
-
         private class LogDownloadFoto
         {
             public int FotoId { get; set; }
@@ -210,6 +238,109 @@ namespace ETL2_GeosCadastroXGeosWeb
             public string Mensagem { get; set; }
             public string ErroCode { get; set; }
             public string Date { get; set; }
+        }
+        private void btnIndiceFoto_Click(object sender, EventArgs e)
+        {
+            string caminhoPasta = txtDiretorioProjeto.Text;
+            string categoria = "";
+            string linha, barramento, barramentoAux = "";
+            string query = "select \"GeoPoints\".\"Code\", cfg.\"getdomaindescbycode\"(" + cmbProjetos.SelectedItem.ToString().Split('-')[0] + ", 'PhotoCategoryTypes', \"PhotoCategorizations\".\"Category\"::text) as \"Category\", ";
+            query += "\"Photos\".\"Path\"::text as \"PhotoLinks\", \"Photos\".\"Id\" ";
+            query += "from sys.\"GeoPoints\" ";
+            query += "inner join sys.\"Tasks\" ON \"Tasks\".\"GeoPointId\" = \"GeoPoints\".\"Id\" ";
+            query += "inner join sys.\"Photos\" ON \"Photos\".\"TaskId\" = \"Tasks\".\"Id\" ";
+            query += "inner join sys.\"PhotoCategorizations\" ON \"PhotoCategorizations\".\"PhotoId\" = \"Photos\".\"Id\" ";
+            query += "where \"GeoPoints\".\"ProjectId\" = " + cmbProjetos.SelectedItem.ToString().Split('-')[0] + " ";
+            query += "and cfg.\"getdomaindescbycode\"(" + cmbProjetos.SelectedItem.ToString().Split('-')[0] + ", 'PhotoCategoryTypes', \"PhotoCategorizations\".\"Category\"::text) <>'Excluída' ";
+            //query += "cfg.\"getdomaindescbycode\"(" + cmbProjetos.SelectedItem.ToString().Split('-')[0] + ", 'PhotoCategoryTypes', \"PhotoCategorizations\".\"Category\"::text) IN ()";
+            query += "and \"GeoPoints\".\"Code\" <> 'X999999' and \"GeoPoints\".\"Code\" <> ''  ";
+            query += "order by \"GeoPoints\".\"Code\", cfg.\"getdomaindescbycode\"(" + cmbProjetos.SelectedItem.ToString().Split('-')[0] + ", 'PhotoCategoryTypes', \"PhotoCategorizations\".\"Category\"::text) ";
+            DataTable dtPhotos = (DataTable)DBAccessCadastro.ExecutarComando(query, CommandType.Text, null, DBAccessCadastro.TypeCommand.ExecuteDataTable);
+
+            using (StreamWriter file = new StreamWriter(@txtDiretorioProjeto.Text + "\\Index.html"))
+            {
+                barramento = dtPhotos.Rows[0]["Code"].ToString();
+                barramentoAux = dtPhotos.Rows[0]["Code"].ToString();
+                linha = "<div class=\"container\">";
+                file.WriteLine(linha);
+                linha = "<div class=\"row\">";
+                file.WriteLine(linha);
+                linha = "<div class=\"col -md-4 col-md-offset-4\">";
+                file.WriteLine(linha);
+                linha = "<ul id = \"treeview\">";
+                file.WriteLine(linha);
+                linha = "<li data-expanded=\"false\">" + dtPhotos.Rows[0]["Code"].ToString();
+                file.WriteLine(linha);
+                linha = "<ul>";
+                file.WriteLine(linha);
+                for (int x = 0; x <= dtPhotos.Rows.Count - 1; x++)
+                {
+                    string nomeArquivo = Path.GetFileName(dtPhotos.Rows[x]["PhotoLinks"].ToString());
+                    if (barramento != barramentoAux)
+                    {
+                        barramentoAux = barramento;
+                        linha = "</ul>";
+                        file.WriteLine(linha);
+                        linha = "</li>";
+                        file.WriteLine(linha);
+                        linha = "<li data-expanded=\"false\">" + dtPhotos.Rows[x]["Code"].ToString();
+                        file.WriteLine(linha);
+                        linha = "<ul>";
+                        file.WriteLine(linha);
+                    }
+                    switch (dtPhotos.Rows[x]["Category"].ToString())
+                    {
+                        case "PAN":
+                            categoria = "Panorâmica";
+                            caminhoPasta = barramento + "/ATIVOS/PANORAMICA/";
+                            break;
+                        case "IP":
+                            categoria = "IP";
+                            caminhoPasta = barramento + "/IP/";
+                            break;
+                        case "RD":
+                            categoria = "Rede";
+                            caminhoPasta = barramento + "/ATIVOS/REDE/";
+                            break;
+                        case "UM":
+                            categoria = "Uso Mútuo";
+                            caminhoPasta = barramento + "/UM/";
+                            break;
+                        case "INS":
+                            categoria = "Instalação";
+                            caminhoPasta = barramento + "/ATIVOS/INSTALACAO/";
+                            break;
+                        default:
+                            caminhoPasta = barramento;
+                            break;
+                    }
+                    linha = "<li><a href=" + "\"" + caminhoPasta + nomeArquivo + "\">" + categoria + "</a></li>";
+                    file.WriteLine(linha);
+                    if (x <= dtPhotos.Rows.Count - 2)
+                    {
+                        barramento = dtPhotos.Rows[x + 1]["Code"].ToString();
+                    }
+                    else
+                    {
+                        barramento = dtPhotos.Rows[x]["Code"].ToString();
+                    }
+
+                }
+                linha = "</ul>";
+                file.WriteLine(linha);
+                linha = "</li>";
+                file.WriteLine(linha);
+                linha = "</ul>";
+                file.WriteLine(linha);
+                linha = "</div>";
+                file.WriteLine(linha);
+                linha = "</div>";
+                file.WriteLine(linha);
+                linha = "</div>";
+                file.WriteLine(linha);
+                file.Close();
+            }
+            MessageBox.Show("Arquivo criado com sucesso.");
         }
     }
 }

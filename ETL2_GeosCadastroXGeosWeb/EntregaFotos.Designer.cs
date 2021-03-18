@@ -47,6 +47,7 @@ namespace ETL2_GeosCadastroXGeosWeb
             this.lblAcompanhamentoDownload = new System.Windows.Forms.Label();
             this.lblContagem = new System.Windows.Forms.Label();
             this.grvLog = new System.Windows.Forms.DataGridView();
+            this.btnIndiceFoto = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.grvLog)).BeginInit();
@@ -101,9 +102,9 @@ namespace ETL2_GeosCadastroXGeosWeb
             // 
             // progressBar1
             // 
-            this.progressBar1.Location = new System.Drawing.Point(274, 127);
+            this.progressBar1.Location = new System.Drawing.Point(361, 127);
             this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(892, 47);
+            this.progressBar1.Size = new System.Drawing.Size(805, 47);
             this.progressBar1.TabIndex = 4;
             this.progressBar1.UseWaitCursor = true;
             // 
@@ -178,7 +179,6 @@ namespace ETL2_GeosCadastroXGeosWeb
             this.txtDiretorioProjeto.Name = "txtDiretorioProjeto";
             this.txtDiretorioProjeto.Size = new System.Drawing.Size(1050, 26);
             this.txtDiretorioProjeto.TabIndex = 39;
-            this.txtDiretorioProjeto.Text = "D:\\eNecad\\NeoEnergia\\EntregaFotos\\ipupiara";
             // 
             // label2
             // 
@@ -191,13 +191,14 @@ namespace ETL2_GeosCadastroXGeosWeb
             // 
             // btnEntregaFotos
             // 
+            this.btnEntregaFotos.BackColor = System.Drawing.SystemColors.ScrollBar;
             this.btnEntregaFotos.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnEntregaFotos.Location = new System.Drawing.Point(15, 127);
             this.btnEntregaFotos.Name = "btnEntregaFotos";
-            this.btnEntregaFotos.Size = new System.Drawing.Size(237, 47);
+            this.btnEntregaFotos.Size = new System.Drawing.Size(144, 47);
             this.btnEntregaFotos.TabIndex = 37;
-            this.btnEntregaFotos.Text = "Gerar Entrega de Fotos";
-            this.btnEntregaFotos.UseVisualStyleBackColor = true;
+            this.btnEntregaFotos.Text = "Importar Fotos";
+            this.btnEntregaFotos.UseVisualStyleBackColor = false;
             this.btnEntregaFotos.Click += new System.EventHandler(this.btnEntregaFotos_ClickAsync);
             // 
             // lblAcompanhamentoDownload
@@ -226,11 +227,24 @@ namespace ETL2_GeosCadastroXGeosWeb
             this.grvLog.Size = new System.Drawing.Size(1154, 433);
             this.grvLog.TabIndex = 42;
             // 
+            // btnIndiceFoto
+            // 
+            this.btnIndiceFoto.BackColor = System.Drawing.SystemColors.ActiveCaption;
+            this.btnIndiceFoto.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnIndiceFoto.Location = new System.Drawing.Point(175, 127);
+            this.btnIndiceFoto.Name = "btnIndiceFoto";
+            this.btnIndiceFoto.Size = new System.Drawing.Size(180, 47);
+            this.btnIndiceFoto.TabIndex = 43;
+            this.btnIndiceFoto.Text = "Gerar Indice de fotos";
+            this.btnIndiceFoto.UseVisualStyleBackColor = false;
+            this.btnIndiceFoto.Click += new System.EventHandler(this.btnIndiceFoto_Click);
+            // 
             // EntregaFotos
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1178, 643);
+            this.Controls.Add(this.btnIndiceFoto);
             this.Controls.Add(this.grvLog);
             this.Controls.Add(this.lblContagem);
             this.Controls.Add(this.lblAcompanhamentoDownload);
@@ -275,5 +289,6 @@ namespace ETL2_GeosCadastroXGeosWeb
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label lblContagem;
         private System.Windows.Forms.DataGridView grvLog;
+        private System.Windows.Forms.Button btnIndiceFoto;
     }
 }

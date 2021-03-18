@@ -496,6 +496,7 @@ namespace ETL2_GeosCadastroXGeosWeb
             int IdCetroDespacho = Convert.ToInt32(((DataTable)DBAccessCadastro.ExecutarComando("select \"ExtId\" from sys.\"Projects\" where \"Id\" = " + cmbProjetos.SelectedItem.ToString().Split('-')[0], CommandType.Text, null, DBAccessCadastro.TypeCommand.ExecuteDataTable)).Rows[0]["ExtId"]);
 
             query = "select \"ExtId\",\"Barrament\",\"SpecialSurveys\" from  sys.\"exportPolesToGeosweb\" ( " + cmbProjetos.SelectedItem.ToString().Split('-')[0] + ") where \"SpecialSurveys\" is not null";
+            //query = "select \"ExtId\",\"Barrament\", 4 as SpecialSurveys from  sys.\"exportPolesToGeosweb\" ( " + cmbProjetos.SelectedItem.ToString().Split('-')[0] + ") where \"SpecialSurveys\" is not null";
             DataTable dtDados = (DataTable)DBAccessCadastro.ExecutarComando(query, CommandType.Text, null, DBAccessCadastro.TypeCommand.ExecuteDataTable);
             progressBar1.Maximum = dtDados.Rows.Count;
             ExportarLevantamentoEspecial_Async(dtDados, dtDadosLevantamentosEspeciais, IdCetroDespacho);
@@ -1079,7 +1080,7 @@ namespace ETL2_GeosCadastroXGeosWeb
             query += "order by \"GeoPoints\".\"Code\", cfg.\"getdomaindescbycode\"(32, 'PhotoCategoryTypes', \"PhotoCategorizations\".\"Category\"::text) ";
             DataTable dtPhotos = (DataTable)DBAccessCadastro.ExecutarComando(query, CommandType.Text, null, DBAccessCadastro.TypeCommand.ExecuteDataTable);
 
-            using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"D:\eNecad\NeoEnergia\Uaua\EntregaFotos.txt"))
+            using (StreamWriter file = new StreamWriter(@"D:\eNecad\NeoEnergia\Uaua\EntregaFotos.txt"))
             {
                 barramento = dtPhotos.Rows[0]["Code"].ToString();
                 linha = "<div class=\"container\">";
@@ -1194,8 +1195,9 @@ namespace ETL2_GeosCadastroXGeosWeb
             query += "inner join sys.\"Tasks\" ON \"Tasks\".\"GeoPointId\" = \"GeoPoints\".\"Id\" ";
             query += "inner join sys.\"Photos\" ON \"Photos\".\"TaskId\" = \"Tasks\".\"Id\" ";
             query += "inner join sys.\"PhotoCategorizations\" ON \"PhotoCategorizations\".\"PhotoId\" = \"Photos\".\"Id\" ";
-            query += "where \"GeoPoints\".\"ProjectId\" = " + cmbProjetos.SelectedItem.ToString().Split('-')[0] + " " ;
-            query += "and cfg.\"getdomaindescbycode\"(" + cmbProjetos.SelectedItem.ToString().Split('-')[0] + ", 'PhotoCategoryTypes', \"PhotoCategorizations\".\"Category\"::text) <>'Excluída' ";
+            query += "where \"GeoPoints\".\"ProjectId\" = " + cmbProjetos.SelectedItem.ToString().Split('-')[0] + " ";
+            //query += "and cfg.\"getdomaindescbycode\"(" + cmbProjetos.SelectedItem.ToString().Split('-')[0] + ", 'PhotoCategoryTypes', \"PhotoCategorizations\".\"Category\"::text) <>'Excluída' ";
+            query += "and cfg.\"getdomaindescbycode\"(" + cmbProjetos.SelectedItem.ToString().Split('-')[0] + ", 'PhotoCategoryTypes', \"PhotoCategorizations\".\"Category\"::text) = 'IP' ";
             query += "and \"GeoPoints\".\"Code\" <> 'X999999' ";
             query += "order by \"GeoPoints\".\"Code\", cfg.\"getdomaindescbycode\"(" + cmbProjetos.SelectedItem.ToString().Split('-')[0] + ", 'PhotoCategoryTypes', \"PhotoCategorizations\".\"Category\"::text) ";
             DataTable dtPhotos = (DataTable)DBAccessCadastro.ExecutarComando(query, CommandType.Text, null, DBAccessCadastro.TypeCommand.ExecuteDataTable);
@@ -1205,44 +1207,47 @@ namespace ETL2_GeosCadastroXGeosWeb
 
             string barramento = dtPhotos.Rows[0]["Code"].ToString();
             Directory.CreateDirectory(txtDiretorioProjeto.Text + "\\" + barramento);
-            Directory.CreateDirectory(txtDiretorioProjeto.Text + "\\" + barramento + "\\IP");
-            Directory.CreateDirectory(txtDiretorioProjeto.Text + "\\" + barramento + "\\PANORAMICA");
-            Directory.CreateDirectory(txtDiretorioProjeto.Text + "\\" + barramento + "\\INSTALACAO");
-            Directory.CreateDirectory(txtDiretorioProjeto.Text + "\\" + barramento + "\\USO_MUTUO");
-            Directory.CreateDirectory(txtDiretorioProjeto.Text + "\\" + barramento + "\\REDE");
+            //Directory.CreateDirectory(txtDiretorioProjeto.Text + "\\" + barramento + "\\IP");
+            //Directory.CreateDirectory(txtDiretorioProjeto.Text + "\\" + barramento + "\\PANORAMICA");
+            //Directory.CreateDirectory(txtDiretorioProjeto.Text + "\\" + barramento + "\\INSTALACAO");
+            //Directory.CreateDirectory(txtDiretorioProjeto.Text + "\\" + barramento + "\\USO_MUTUO");
+            //Directory.CreateDirectory(txtDiretorioProjeto.Text + "\\" + barramento + "\\REDE");
 
             for (int x = 0; x <= dtPhotos.Rows.Count - 1; x++)
             {
                 if (barramento != dtPhotos.Rows[x]["Code"].ToString())
                 {
+                    barramento = dtPhotos.Rows[x]["Code"].ToString();
                     Directory.CreateDirectory(txtDiretorioProjeto.Text + "\\" + barramento);
-                    Directory.CreateDirectory(txtDiretorioProjeto.Text + "\\" + barramento + "\\IP");
-                    Directory.CreateDirectory(txtDiretorioProjeto.Text + "\\" + barramento + "\\PANORAMICA");
-                    Directory.CreateDirectory(txtDiretorioProjeto.Text + "\\" + barramento + "\\INSTALACAO");
-                    Directory.CreateDirectory(txtDiretorioProjeto.Text + "\\" + barramento + "\\USO_MUTUO");
-                    Directory.CreateDirectory(txtDiretorioProjeto.Text + "\\" + barramento + "\\REDE");
+                    //Directory.CreateDirectory(txtDiretorioProjeto.Text + "\\" + barramento + "\\IP");
+                    //Directory.CreateDirectory(txtDiretorioProjeto.Text + "\\" + barramento + "\\PANORAMICA");
+                    //Directory.CreateDirectory(txtDiretorioProjeto.Text + "\\" + barramento + "\\INSTALACAO");
+                    //Directory.CreateDirectory(txtDiretorioProjeto.Text + "\\" + barramento + "\\USO_MUTUO");
+                    //Directory.CreateDirectory(txtDiretorioProjeto.Text + "\\" + barramento + "\\REDE");
                 }
-                switch (dtPhotos.Rows[x]["Category"].ToString())
-                {
-                    case "PAN":
-                        caminhoPasta = txtDiretorioProjeto.Text + "\\" + barramento + "\\PANORAMICA\\";
-                        break;
-                    case "IP":
-                        caminhoPasta = txtDiretorioProjeto.Text + "\\" + barramento + "\\IP\\";
-                        break;
-                    case "RD":
-                        caminhoPasta = txtDiretorioProjeto.Text + "\\" + barramento + "\\REDE\\";
-                        break;
-                    case "UM":
-                        caminhoPasta = txtDiretorioProjeto.Text + "\\" + barramento + "\\USO_MUTUO\\";
-                        break;
-                    case "INS":
-                        caminhoPasta = txtDiretorioProjeto.Text + "\\" + barramento + "\\INSTALACAO\\";
-                        break;
-                    default:
-                        caminhoPasta = txtDiretorioProjeto.Text + "\\" + barramento;
-                        break;
-                }
+                //switch (dtPhotos.Rows[x]["Category"].ToString())
+                //{
+                //    case "PAN":
+                //        caminhoPasta = txtDiretorioProjeto.Text + "\\" + barramento + "\\PANORAMICA\\";
+                //        break;
+                //    case "IP":
+                //        caminhoPasta = txtDiretorioProjeto.Text + "\\" + barramento + "\\IP\\";
+                //        break;
+                //    case "RD":
+                //        caminhoPasta = txtDiretorioProjeto.Text + "\\" + barramento + "\\REDE\\";
+                //        break;
+                //    case "UM":
+                //        caminhoPasta = txtDiretorioProjeto.Text + "\\" + barramento + "\\USO_MUTUO\\";
+                //        break;
+                //    case "INS":
+                //        caminhoPasta = txtDiretorioProjeto.Text + "\\" + barramento + "\\INSTALACAO\\";
+                //        break;
+                //    default:
+                //        caminhoPasta = txtDiretorioProjeto.Text + "\\" + barramento;
+                //        break;
+                //}
+                caminhoPasta = txtDiretorioProjeto.Text + "\\" + barramento + "\\";
+
                 startDownload(dtPhotos.Rows[x]["PhotoLinks"].ToString(), caminhoPasta, Convert.ToInt32(dtPhotos.Rows[0]["Id"]));
                 barramento = dtPhotos.Rows[x]["Code"].ToString();
                 progressBar1.Value = progressBar1.Value + 1;
@@ -1283,5 +1288,193 @@ namespace ETL2_GeosCadastroXGeosWeb
 
         #endregion
 
+        private void button2_Click(object sender, EventArgs e)
+        {
+
+            try
+            {
+                DataTable dtPhotoCadastro = new DataTable();
+                //DataTable dtPhotoGeos = (DataTable)DBAccessGeos.ExecutarComando("select * from De_Para_Fotos_Uaua where serviceordertaskid not in (76479,76480) ", CommandType.Text, null, DBAccessGeos.TypeCommand.ExecuteDataTable);
+                //DataTable dtPhotoGeos = (DataTable)DBAccessGeos.ExecutarComando("select * from De_Para_Fotos_Uaua where serviceordertaskid in (76479,76480) ", CommandType.Text, null, DBAccessGeos.TypeCommand.ExecuteDataTable);
+                DataTable dtPhotoGeos = (DataTable)DBAccessGeos.ExecutarComando("select * from santa_babara_de_para_foto ", CommandType.Text, null, DBAccessGeos.TypeCommand.ExecuteDataTable);
+                progressBar1.Value = 0;
+                progressBar1.Maximum = dtPhotoGeos.Rows.Count;
+
+                for (int x = 0; x <= dtPhotoGeos.Rows.Count - 1; x++)
+                {
+                    dtPhotoCadastro = new DataTable();
+
+                    Console.WriteLine("----------------task : " + dtPhotoGeos.Rows[x]["serviceordertaskid"].ToString());
+
+                    Console.WriteLine("antes select photos");
+                    string query = "select \"Path\",p.\"TaskId\" from sys.\"Photos\" p inner join sys.\"Tasks\" t on p.\"TaskId\" = t.\"Id\" where \"ExtId\" = " + dtPhotoGeos.Rows[x]["serviceordertaskid"].ToString() + " limit 1";
+                    dtPhotoCadastro = (DataTable)DBAccessCadastro.ExecutarComando(query, CommandType.Text, null, DBAccessCadastro.TypeCommand.ExecuteDataTable);
+                    Console.WriteLine("depois select photos");
+                    if (dtPhotoCadastro.Rows.Count > 0)
+                    {
+                        Console.WriteLine("antes datasinc");
+                        string dataSincronizacao = dtPhotoCadastro.Rows[0]["Path"].ToString().Replace("https://geosweb.blob.core.windows.net/pictures/COELBA/BA/SERRA_DOURADA/", "").Substring(0, 10);
+                        Console.WriteLine("depois data sinc");
+
+                        Console.WriteLine("antes update photos");
+                        query = "update sys.\"Photos\" set \"IsDelivered\" = true where \"TaskId\" = " + dtPhotoCadastro.Rows[0]["TaskId"].ToString();
+                        DBAccessCadastro.ExecutarComando(query, CommandType.Text, null, DBAccessCadastro.TypeCommand.ExecuteNonQuery);
+                        Console.WriteLine("depois update");
+
+                        int contRanjo = dtPhotoGeos.Rows[x]["PhotoSlotPara"].ToString().Split(';').Length - 1;
+                        for (int ranjo = 0; ranjo <= contRanjo; ranjo++)
+                        {
+                            int primeiraFoto = 0;
+                            int ultimaFoto = 0;
+
+                            if (contRanjo != 0)
+                            {
+                                Console.WriteLine("antes primeira foto");
+                                primeiraFoto = Convert.ToInt32(dtPhotoGeos.Rows[x]["PhotoSlotPara"].ToString().Split(';')[ranjo].Substring(3, 4));
+                                Console.WriteLine("depois primeira foto");
+                                Console.WriteLine("antes ultima foto");
+                                ultimaFoto = Convert.ToInt32(dtPhotoGeos.Rows[x]["PhotoSlotPara"].ToString().Split(';')[ranjo].Split('-')[1]);
+                                Console.WriteLine("depois ultima foto");
+                            }
+                            else
+                            {
+                                Console.WriteLine("antes primeira foto");
+                                primeiraFoto = Convert.ToInt32(dtPhotoGeos.Rows[x]["PhotoSlotPara"].ToString().Substring(3, 4));
+                                Console.WriteLine("depois primeira foto");
+                                Console.WriteLine("antes ultima foto");
+                                ultimaFoto = Convert.ToInt32(dtPhotoGeos.Rows[x]["PhotoSlotPara"].ToString().Split('-')[1]);
+                                Console.WriteLine("depois ultima foto");
+                            }
+                            for (int z = primeiraFoto; z <= ultimaFoto; z++)
+                            {
+                                //COLOCAR SEQUENC VER COMO FUNCIONA NO POSTGRE
+                                query = "insert into sys.\"Photos\" (\"Id\",\"TaskId\",\"Path\",\"IsDelivered\") select max(\"Id\") + 1 ,";
+                                query += dtPhotoCadastro.Rows[0]["TaskId"].ToString() + ",";
+                                query += "'https://geosweb.blob.core.windows.net/pictures/COELBA/BA/SERRA_DOURADA/" + dataSincronizacao + "/" + dtPhotoGeos.Rows[x]["email"].ToString().Replace("@enecad.com.br", "") + "/01/" + z.ToString().PadLeft(4, '0') + ".JPG',";
+                                query += "false from sys.\"Photos\"  ";
+                                Console.WriteLine("antes insert photo");
+                                DBAccessCadastro.ExecutarComando(query, CommandType.Text, null, DBAccessCadastro.TypeCommand.ExecuteNonQuery);
+                                Console.WriteLine("depois insert photos");
+                            }
+                        }
+
+                        Console.WriteLine(x + 1);
+                        progressBar1.Value = progressBar1.Value + 1;
+
+                    }
+                    else
+                    {
+                        Console.WriteLine("----------------task sem foto : " + dtPhotoGeos.Rows[x]["serviceordertaskid"].ToString());
+                    }
+                    
+
+                    Console.WriteLine("----------------fim task : " + dtPhotoGeos.Rows[x]["serviceordertaskid"].ToString());
+                }
+                MessageBox.Show("Atualização realizada com sucesso.");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                DataTable dtPhotoCadastro = new DataTable();
+                //DataTable dtPhotoGeos = (DataTable)DBAccessGeos.ExecutarComando("select * from De_Para_Fotos_Uaua where serviceordertaskid not in (76479,76480) ", CommandType.Text, null, DBAccessGeos.TypeCommand.ExecuteDataTable);
+                //DataTable dtPhotoGeos = (DataTable)DBAccessGeos.ExecutarComando("select * from De_Para_Fotos_Uaua where serviceordertaskid in (76479,76480) ", CommandType.Text, null, DBAccessGeos.TypeCommand.ExecuteDataTable);
+                DataTable dtPhotoGeos = (DataTable)DBAccessGeos.ExecutarComando("select * from De_Para_Fotos_Uaua ", CommandType.Text, null, DBAccessGeos.TypeCommand.ExecuteDataTable);
+                progressBar1.Value = 0;
+                progressBar1.Maximum = dtPhotoGeos.Rows.Count;
+
+                for (int x = 0; x <= dtPhotoGeos.Rows.Count - 1; x++)
+                {
+                    dtPhotoCadastro = new DataTable();
+
+                    Console.WriteLine("----------------task : " + dtPhotoGeos.Rows[x]["serviceordertaskid"].ToString());
+
+                    //Console.WriteLine("antes select photos");
+                    string query = "select p.\"Id\",\"Path\",p.\"TaskId\" from sys.\"Photos\" p inner join sys.\"Tasks\" t on p.\"TaskId\" = t.\"Id\" where \"ExtId\" = " + dtPhotoGeos.Rows[x]["serviceordertaskid"].ToString();
+                    dtPhotoCadastro = (DataTable)DBAccessCadastro.ExecutarComando(query, CommandType.Text, null, DBAccessCadastro.TypeCommand.ExecuteDataTable);
+                    for (int y = 0; y <= dtPhotoCadastro.Rows.Count - 1; y++)
+                    {
+                        string nomeArquivo = Path.GetFileName(dtPhotoCadastro.Rows[y][1].ToString().Trim());
+                        if (nomeArquivo.Length < 8)
+                        {
+                            string caminhoAtual = dtPhotoCadastro.Rows[y][1].ToString();
+                            string caminhoCorreto = caminhoAtual.Replace(nomeArquivo, "0" + nomeArquivo);
+                            query = "update sys.\"Photos\" set \"Path\" = '" + caminhoCorreto + "' where \"Id\" = " + dtPhotoCadastro.Rows[y]["Id"].ToString();
+                            DBAccessCadastro.ExecutarComando(query, CommandType.Text, null, DBAccessCadastro.TypeCommand.ExecuteNonQuery);
+                        }
+                    }
+
+
+                    //Console.WriteLine("depois select photos");
+
+                    //Console.WriteLine("antes datasinc");
+                    //string dataSincronizacao = dtPhotoCadastro.Rows[0]["Path"].ToString().Replace("https://geosweb.blob.core.windows.net/pictures/COELBA/BA/UAUA/", "").Substring(0, 10);
+                    //Console.WriteLine("depois data sinc");
+
+                    //Console.WriteLine("antes update photos");
+                    //query = "update sys.\"Photos\" set \"IsDelivered\" = true where \"TaskId\" = " + dtPhotoCadastro.Rows[0]["TaskId"].ToString();
+                    //DBAccessCadastro.ExecutarComando(query, CommandType.Text, null, DBAccessCadastro.TypeCommand.ExecuteNonQuery);
+                    //Console.WriteLine("depois update");
+
+                    //int contRanjo = dtPhotoGeos.Rows[x]["PhotoSlotPara"].ToString().Split(';').Length - 1;
+                    //for (int ranjo = 0; ranjo <= contRanjo; ranjo++)
+                    //{
+                    //    int primeiraFoto = 0;
+                    //    int ultimaFoto = 0;
+
+                    //    if (contRanjo != 0)
+                    //    {
+                    //        Console.WriteLine("antes primeira foto");
+                    //        primeiraFoto = Convert.ToInt32(dtPhotoGeos.Rows[x]["PhotoSlotPara"].ToString().Split(';')[ranjo].Substring(3, 4));
+                    //        Console.WriteLine("depois primeira foto");
+                    //        Console.WriteLine("antes ultima foto");
+                    //        ultimaFoto = Convert.ToInt32(dtPhotoGeos.Rows[x]["PhotoSlotPara"].ToString().Split(';')[ranjo].Split('-')[1]);
+                    //        Console.WriteLine("depois ultima foto");
+                    //    }
+                    //    else
+                    //    {
+                    //        Console.WriteLine("antes primeira foto");
+                    //        primeiraFoto = Convert.ToInt32(dtPhotoGeos.Rows[x]["PhotoSlotPara"].ToString().Substring(3, 4));
+                    //        Console.WriteLine("depois primeira foto");
+                    //        Console.WriteLine("antes ultima foto");
+                    //        ultimaFoto = Convert.ToInt32(dtPhotoGeos.Rows[x]["PhotoSlotPara"].ToString().Split('-')[1]);
+                    //        Console.WriteLine("depois ultima foto");
+                    //    }
+                    //    for (int z = primeiraFoto; z <= ultimaFoto; z++)
+                    //    {
+                    //        query = "insert into sys.\"Photos\" (\"Id\",\"TaskId\",\"Path\",\"IsDelivered\") select max(\"Id\") + 1 ,";
+                    //        query += dtPhotoCadastro.Rows[0]["TaskId"].ToString() + ",";
+                    //        query += "'https://geosweb.blob.core.windows.net/pictures/COELBA/BA/UAUA/" + dataSincronizacao + "/" + dtPhotoGeos.Rows[x]["email"].ToString().Replace("@enecad.com.br", "") + "/01/" + z.ToString() + ".JPG',";
+                    //        query += "false from sys.\"Photos\"  ";
+                    //        Console.WriteLine("antes insert photo");
+                    //        DBAccessCadastro.ExecutarComando(query, CommandType.Text, null, DBAccessCadastro.TypeCommand.ExecuteNonQuery);
+                    //        Console.WriteLine("depois insert photos");
+                    //    }
+                    //}
+
+                    //Console.WriteLine(x + 1);
+                    //progressBar1.Value = progressBar1.Value + 1;
+
+                    //Console.WriteLine("----------------fim task : " + dtPhotoGeos.Rows[x]["serviceordertaskid"].ToString());
+                }
+                MessageBox.Show("Atualização realizada com sucesso.");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void btnGerarSQLite_Click(object sender, EventArgs e)
+        {
+            DBSettingMobile.ConnectionString = txtCaminhoSQLite.Text;
+            DataTable dtFase = (DataTable)DBAccessMobile.ExecutarComando("SELECT * FROM serviceorders", CommandType.Text, null, DBAccessMobile.TypeCommand.ExecuteDataTable);
+        }
     }
 }
