@@ -39,6 +39,8 @@ namespace ETL2_GeosCadastroXGeosWeb
             this.eTL2ToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.entregaDeFotosToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.gerarSQLiteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.eTL4PostGreXSqlServerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.importarShapeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -81,7 +83,9 @@ namespace ETL2_GeosCadastroXGeosWeb
             this.toolStripDropDownButton1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.eTL2ToolStripMenuItem1,
             this.entregaDeFotosToolStripMenuItem,
-            this.gerarSQLiteToolStripMenuItem});
+            this.gerarSQLiteToolStripMenuItem,
+            this.eTL4PostGreXSqlServerToolStripMenuItem,
+            this.importarShapeToolStripMenuItem});
             this.toolStripDropDownButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripDropDownButton1.Image")));
             this.toolStripDropDownButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripDropDownButton1.Name = "toolStripDropDownButton1";
@@ -91,23 +95,37 @@ namespace ETL2_GeosCadastroXGeosWeb
             // eTL2ToolStripMenuItem1
             // 
             this.eTL2ToolStripMenuItem1.Name = "eTL2ToolStripMenuItem1";
-            this.eTL2ToolStripMenuItem1.Size = new System.Drawing.Size(224, 26);
+            this.eTL2ToolStripMenuItem1.Size = new System.Drawing.Size(248, 26);
             this.eTL2ToolStripMenuItem1.Text = "ETL 2";
             this.eTL2ToolStripMenuItem1.Click += new System.EventHandler(this.eTL2ToolStripMenuItem1_Click);
             // 
             // entregaDeFotosToolStripMenuItem
             // 
             this.entregaDeFotosToolStripMenuItem.Name = "entregaDeFotosToolStripMenuItem";
-            this.entregaDeFotosToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.entregaDeFotosToolStripMenuItem.Size = new System.Drawing.Size(248, 26);
             this.entregaDeFotosToolStripMenuItem.Text = "Entrega de fotos";
             this.entregaDeFotosToolStripMenuItem.Click += new System.EventHandler(this.entregaDeFotosToolStripMenuItem_Click);
             // 
             // gerarSQLiteToolStripMenuItem
             // 
             this.gerarSQLiteToolStripMenuItem.Name = "gerarSQLiteToolStripMenuItem";
-            this.gerarSQLiteToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.gerarSQLiteToolStripMenuItem.Size = new System.Drawing.Size(248, 26);
             this.gerarSQLiteToolStripMenuItem.Text = "Gerar SQLite";
             this.gerarSQLiteToolStripMenuItem.Click += new System.EventHandler(this.gerarSQLiteToolStripMenuItem_Click);
+            // 
+            // eTL4PostGreXSqlServerToolStripMenuItem
+            // 
+            this.eTL4PostGreXSqlServerToolStripMenuItem.Name = "eTL4PostGreXSqlServerToolStripMenuItem";
+            this.eTL4PostGreXSqlServerToolStripMenuItem.Size = new System.Drawing.Size(248, 26);
+            this.eTL4PostGreXSqlServerToolStripMenuItem.Text = "ETL4 PostGreXSqlServer";
+            this.eTL4PostGreXSqlServerToolStripMenuItem.Click += new System.EventHandler(this.eTL4PostGreXSqlServerToolStripMenuItem_Click);
+            // 
+            // importarShapeToolStripMenuItem
+            // 
+            this.importarShapeToolStripMenuItem.Name = "importarShapeToolStripMenuItem";
+            this.importarShapeToolStripMenuItem.Size = new System.Drawing.Size(248, 26);
+            this.importarShapeToolStripMenuItem.Text = "Import Equatorial";
+            this.importarShapeToolStripMenuItem.Click += new System.EventHandler(this.importarShapeToolStripMenuItem_Click);
             // 
             // Principal
             // 
@@ -139,5 +157,7 @@ namespace ETL2_GeosCadastroXGeosWeb
         private System.Windows.Forms.ToolStripMenuItem eTL2ToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem entregaDeFotosToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem gerarSQLiteToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem eTL4PostGreXSqlServerToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem importarShapeToolStripMenuItem;
     }
 }

@@ -2,33 +2,31 @@
 
 namespace DAO
 {
-    public class DBSettingCadastro
+    public class DBSettingGeosWeb
     {
 
-        private DBSettingCadastro()
+        private DBSettingGeosWeb()
         {
         }
-        static DBSettingCadastro()
+        static DBSettingGeosWeb()
         {
             try
             {
-                //Provider = PostgreSQLOLEDBProvider; Data Source = myServerAddress; location = myDataBase; User ID = myUsername; password = myPassword; timeout = 1000;
-               // _connectionString = "Server=localhost;Port=5432;User Id=postgres;Password=123456;Database=dbgeoscad_mirror;Timeout=1000;CommandTimeout = 1000;";
-                _connectionString = "Server=191.232.160.227;Port=25437;User Id=postgres;Password=stXYZ321#@;Database=dbgeoscad;Timeout=300;CommandTimeout = 300;";
-                _providerName = "Npgsql";
-                _tipoBanco = "ePgSQL";
-                _sufixoBanco = "@";
+                //servidor\banco produção
+                //_connectionString = "Data Source=dbenecadprod.database.windows.net ;Initial Catalog=NeoenergiaNetAssetDB_Prod;Persist Security Info=True;User ID=fabiano.muniz;Password=DbGeos@884400";
+                //servidor\banco homologação
+                _connectionString = "Data Source=dbenecaddev.database.windows.net;Initial Catalog=NeoenergiaNetAssetDB_Homologa;Persist Security Info=True;User ID=fabiano.muniz;Password=DbGeos@884400";
 
-                //_connectionString = "Data Source=DESKTOP-E999VKR\\SRVSQLSERVER2019;Initial Catalog=CADASTRO_IMPORT_UM;Integrated Security=True";
-                //_providerName = "System.Data.SqlClient";
-                //_tipoBanco = "eSQL";
-                //_sufixoBanco = "@";
+                //Local
+                //_connectionString = "Data Source=DESKTOP-E999VKR\\SRVSQLSERVER2019;Initial Catalog=NeoenergiaNetAssetDB_Homologa_I;Persist Security Info=True;User ID=sa;Password=123456";
+                _providerName = "System.Data.SqlClient";
+                _tipoBanco = "eSQL";
+                _sufixoBanco = "@";
             }
             catch (Exception)
             {
                 throw new Exception("Erro ao acessar ConnectionString.");
             }
-
         }
 
         private static string _connectionString;
@@ -50,7 +48,6 @@ namespace DAO
                 return _connectionString;
             }
         }
-
         private static string _providerName;
         public string pproviderName
         {
@@ -70,7 +67,6 @@ namespace DAO
                 return _providerName;
             }
         }
-
         private static string _tipoBanco;
         public string ptipoBanco
         {
@@ -90,7 +86,6 @@ namespace DAO
                 return _tipoBanco;
             }
         }
-
         private static string _sufixoBanco;
         public string psufixoBanco
         {
@@ -110,7 +105,5 @@ namespace DAO
                 return _sufixoBanco;
             }
         }
-
     }
-
 }

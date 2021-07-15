@@ -14,10 +14,10 @@ using System.Windows.Forms;
 
 namespace ETL2_GeosCadastroXGeosWeb
 {
-    public partial class Form1 : Form
+    public partial class frmETL2 : Form
     {
         #region " Inicio "
-        public Form1()
+        public frmETL2()
         {
             InitializeComponent();
             if (DBSettingCadastro.TipoBanco == "ePgSQL")
@@ -354,8 +354,8 @@ namespace ETL2_GeosCadastroXGeosWeb
                     for (int x = 0; x <= listaPostesCADASTRO.Rows.Count - 1; x++)
                     {
 
-                        string query = "insert into poles (extid, barrament, materialid, typeid, xp, yp, poleeffortid, poleheightid, municipalityid, organizationid, assetbit, su_count, su_irregular) ";
-                        query += " values (@extid, @barrament, @materialid, @typeid, @xp, @yp, @poleeffortid, @poleheightid, @municipalityid, @organizationid, @assetbit, @su_count, @su_irregular)";
+                        string query = "insert into poles (extid, barrament, materialid, typeid, xp, yp, poleeffortid, poleheightid, municipalityid, organizationid, assetbit, su_count, su_irregular, point) ";
+                        query += " values (@extid, @barrament, @materialid, @typeid, @xp, @yp, @poleeffortid, @poleheightid, @municipalityid, @organizationid, @assetbit, @su_count, @su_irregular,dbo.transformWebmercatorToWGS84(@xp,@yp) )";
 
                         int materialId = 0;
                         switch (listaPostesCADASTRO.Rows[x]["Material"])
@@ -410,8 +410,8 @@ namespace ETL2_GeosCadastroXGeosWeb
                         comandoGeos.Parameters.AddWithValue("@typeid", TypeId);
                         comandoGeos.Parameters.AddWithValue("@xp", listaPostesCADASTRO.Rows[x]["xp"]);
                         comandoGeos.Parameters.AddWithValue("@yp", listaPostesCADASTRO.Rows[x]["yp"]);
-                        comandoGeos.Parameters.AddWithValue("@poleeffortid", listaPostesCADASTRO.Rows[x]["effort"]);
-                        comandoGeos.Parameters.AddWithValue("@poleheightid", listaPostesCADASTRO.Rows[x]["height"]);
+                        comandoGeos.Parameters.AddWithValue("@poleeffortid", listaPostesCADASTRO.Rows[x]["effort"] == DBNull.Value ? 0 : listaPostesCADASTRO.Rows[x]["effort"]);
+                        comandoGeos.Parameters.AddWithValue("@poleheightid", listaPostesCADASTRO.Rows[x]["height"]== DBNull.Value ? 0 : listaPostesCADASTRO.Rows[x]["height"]);
                         comandoGeos.Parameters.AddWithValue("@municipalityid", IdMunicipio);
                         comandoGeos.Parameters.AddWithValue("@organizationid", 1);
                         comandoGeos.Parameters.AddWithValue("@assetbit", 0);
@@ -426,7 +426,6 @@ namespace ETL2_GeosCadastroXGeosWeb
                         lblPorcento.Text = Convert.ToString((progressBar1.Value * 100) / listaPostesCADASTRO.Rows.Count) + "%";
 
                     }
-
                 }
                 catch (Exception ex)
                 {
@@ -1474,7 +1473,7 @@ namespace ETL2_GeosCadastroXGeosWeb
         private void btnGerarSQLite_Click(object sender, EventArgs e)
         {
             DBSettingMobile.ConnectionString = txtCaminhoSQLite.Text;
-            DataTable dtFase = (DataTable)DBAccessMobile.ExecutarComando("SELECT * FROM serviceorders", CommandType.Text, null, DBAccessMobile.TypeCommand.ExecuteDataTable);
+            DataTable dtFase = (DataTable)DBAccessMobile.ExecutarComando("SELECT * FROM ServiceOrders", CommandType.Text, null, DBAccessMobile.TypeCommand.ExecuteDataTable);
         }
     }
 }

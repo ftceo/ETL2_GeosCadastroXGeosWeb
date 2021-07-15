@@ -12,20 +12,32 @@ namespace ETL2_GeosCadastroXGeosWeb
 
         private void eTL2ToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            Form1 frmETL2 = new Form1();
+            frmETL2 frmETL2 = new frmETL2();
             frmETL2.ShowDialog();
         }
 
         private void entregaDeFotosToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            EntregaFotos EntregaFotos = new EntregaFotos();
+            frmEntregaFotos EntregaFotos = new frmEntregaFotos();
             EntregaFotos.ShowDialog();
         }
 
         private void gerarSQLiteToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            GerarSQLite GerarSQLite = new GerarSQLite();
+            frmGerarSQLite GerarSQLite = new frmGerarSQLite();
             GerarSQLite.ShowDialog();
+        }
+
+        private void eTL4PostGreXSqlServerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            frmETL4 frmETL4 = new frmETL4();
+            frmETL4.ShowDialog();
+        }
+
+        private void importarShapeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            frmImportEquatorial importShape = new frmImportEquatorial();
+            importShape.ShowDialog();
         }
     }
 }

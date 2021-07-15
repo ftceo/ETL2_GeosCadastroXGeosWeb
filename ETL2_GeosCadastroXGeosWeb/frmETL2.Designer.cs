@@ -1,6 +1,6 @@
 ﻿namespace ETL2_GeosCadastroXGeosWeb
 {
-    partial class Form1
+    partial class frmETL2
     {
         /// <summary>
         /// Variável de designer necessária.
@@ -242,7 +242,7 @@
             // lblProgresso
             // 
             this.lblProgresso.AutoSize = true;
-            this.lblProgresso.Location = new System.Drawing.Point(434, 2);
+            this.lblProgresso.Location = new System.Drawing.Point(462, 343);
             this.lblProgresso.Name = "lblProgresso";
             this.lblProgresso.Size = new System.Drawing.Size(0, 17);
             this.lblProgresso.TabIndex = 4;
@@ -357,7 +357,6 @@
             this.groupBox4.Controls.Add(this.btnGerarSQLite);
             this.groupBox4.Controls.Add(this.txtCaminhoSQLite);
             this.groupBox4.Controls.Add(this.label5);
-            this.groupBox4.Controls.Add(this.lblProgresso);
             this.groupBox4.Location = new System.Drawing.Point(15, 421);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(988, 54);
@@ -366,12 +365,15 @@
             // 
             // btnGerarSQLite
             // 
-            this.btnGerarSQLite.Location = new System.Drawing.Point(794, 16);
+            this.btnGerarSQLite.BackColor = System.Drawing.Color.Red;
+            this.btnGerarSQLite.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnGerarSQLite.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.btnGerarSQLite.Location = new System.Drawing.Point(-3, -7);
             this.btnGerarSQLite.Name = "btnGerarSQLite";
-            this.btnGerarSQLite.Size = new System.Drawing.Size(176, 32);
+            this.btnGerarSQLite.Size = new System.Drawing.Size(991, 65);
             this.btnGerarSQLite.TabIndex = 7;
             this.btnGerarSQLite.Text = "Gerar SQLite";
-            this.btnGerarSQLite.UseVisualStyleBackColor = true;
+            this.btnGerarSQLite.UseVisualStyleBackColor = false;
             this.btnGerarSQLite.Click += new System.EventHandler(this.btnGerarSQLite_Click);
             // 
             // txtCaminhoSQLite
@@ -400,6 +402,7 @@
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.txtNumberOS);
+            this.Controls.Add(this.lblProgresso);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.lblAcompanhamentoDownload);
